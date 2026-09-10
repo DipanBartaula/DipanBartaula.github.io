@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450" font-family="JetBrains Mono, ui-monospace, monospace">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0f1330"/><stop offset="1" stop-color="#1b1f4a"/></linearGradient>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#8b93ff"/></marker>
+  </defs>
+  <rect width="800" height="450" fill="url(#bg)"/>
+  <g stroke="#fff" stroke-opacity="0.05"><path d="M0 112H800M0 225H800M0 337H800M200 0V450M400 0V450M600 0V450"/></g>
+
+  <!-- assembly editor -->
+  <rect x="40" y="36" width="250" height="300" rx="12" fill="#0b0d1f" stroke="#22d3ee" stroke-width="2"/>
+  <text x="56" y="60" font-size="11" fill="#22d3ee">program.asm</text>
+  <g font-size="12" fill="#eef0f6">
+    <text x="56" y="92"><tspan fill="#8b93ff">2000</tspan>  MVI A, 05H</text>
+    <text x="56" y="114"><tspan fill="#8b93ff">2002</tspan>  MVI B, 03H</text>
+    <text x="56" y="136"><tspan fill="#fbbf24">2004  ADD B</tspan></text>
+    <text x="56" y="158"><tspan fill="#8b93ff">2005</tspan>  STA 3000H</text>
+    <text x="56" y="180"><tspan fill="#8b93ff">2008</tspan>  DCR A</text>
+    <text x="56" y="202"><tspan fill="#8b93ff">2009</tspan>  JNZ 2004H</text>
+    <text x="56" y="224"><tspan fill="#8b93ff">200C</tspan>  HLT</text>
+  </g>
+  <rect x="48" y="122" width="234" height="20" rx="4" fill="#fbbf24" opacity="0.15"/>
+  <text x="56" y="318" font-size="10" fill="#8b93ff">▶ step · run · reset</text>
+
+  <path d="M290 186 H336" stroke="#8b93ff" stroke-width="2" fill="none" marker-end="url(#a)"/>
+  <rect x="342" y="150" width="110" height="72" rx="10" fill="#151a3a" stroke="#8b93ff" stroke-width="2"/>
+  <text x="397" y="180" text-anchor="middle" font-size="11" fill="#eef0f6">parse →</text>
+  <text x="397" y="198" text-anchor="middle" font-size="11" fill="#eef0f6">execute</text>
+  <text x="397" y="238" text-anchor="middle" font-size="9" fill="#8b93ff">ASP.NET Core · C#</text>
+  <path d="M452 186 H498" stroke="#8b93ff" stroke-width="2" fill="none" marker-end="url(#a)"/>
+
+  <!-- registers -->
+  <rect x="505" y="36" width="255" height="150" rx="12" fill="#151a3a" stroke="#fbbf24" stroke-width="2"/>
+  <text x="521" y="60" font-size="11" fill="#fbbf24">registers</text>
+  <g font-size="12" fill="#eef0f6">
+    <text x="521" y="88">A  <tspan fill="#fbbf24">08H</tspan></text><text x="640" y="88">B  <tspan fill="#22d3ee">03H</tspan></text>
+    <text x="521" y="112">C  <tspan fill="#22d3ee">00H</tspan></text><text x="640" y="112">D  <tspan fill="#22d3ee">00H</tspan></text>
+    <text x="521" y="136">H  <tspan fill="#22d3ee">30H</tspan></text><text x="640" y="136">L  <tspan fill="#22d3ee">00H</tspan></text>
+    <text x="521" y="164">PC <tspan fill="#fbbf24">2005H</tspan></text><text x="640" y="164">SP <tspan fill="#22d3ee">FFFFH</tspan></text>
+  </g>
+  <!-- flags -->
+  <rect x="505" y="196" width="255" height="52" rx="10" fill="#151a3a" stroke="#22d3ee" stroke-width="1.5"/>
+  <text x="521" y="216" font-size="10" fill="#22d3ee">flags</text>
+  <g font-size="12" text-anchor="middle"><text x="560" y="238" fill="#8b93a6">S 0</text><text x="605" y="238" fill="#8b93a6">Z 0</text><text x="650" y="238" fill="#8b93a6">AC 0</text><text x="700" y="238" fill="#fbbf24">P 1</text><text x="740" y="238" fill="#8b93a6">CY 0</text></g>
+  <!-- memory -->
+  <rect x="505" y="258" width="255" height="78" rx="10" fill="#0b0d1f" stroke="#8b93ff" stroke-width="1.5"/>
+  <text x="521" y="278" font-size="10" fill="#8b93ff">memory</text>
+  <g font-size="11" fill="#eef0f6"><text x="521" y="300">3000H  <tspan fill="#fbbf24">08</tspan>  00  00  00</text><text x="521" y="322">3004H  00  00  00  00</text></g>
+
+  <rect x="40" y="380" width="720" height="40" rx="10" fill="#151a3a" stroke="#8b93ff" stroke-width="1.5"/>
+  <text x="400" y="406" text-anchor="middle" font-size="12" fill="#8b93ff">assembly → parser → instruction-by-instruction execution → live registers, flags &amp; memory · Node.js front end</text>
+</svg>
