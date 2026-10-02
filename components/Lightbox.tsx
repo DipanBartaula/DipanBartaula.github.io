@@ -1,28 +1,41 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSafeReducedMotion } from "@/lib/useSafeReducedMotion";
+import FlowFigure from "./FlowFigure";
+import type { FlowSpec } from "@/lib/flows";
+
+/** Fired on open/close so in-page animated figures can pause behind the viewer. */
+export const LIGHTBOX_EVENT = "lightbox-toggle";
 
 const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 export default function Lightbox({
   src,
   caption,
+  flow,
   onClose,
 }: {
   src: string | null;
   caption?: string;
+  /** When given, the enlarged figure keeps its animation. */
+  flow?: FlowSpec;
   onClose: () => void;
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const lastFocused = useRef<HTMLElement | null>(null);
   const reduceMotion = useSafeReducedMotion();
+  // Rendered into <body> so no section's stacking context can sit above it.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     if (!src) return;
     lastFocused.current = document.activeElement as HTMLElement;
+    window.dispatchEvent(new CustomEvent(LIGHTBOX_EVENT, { detail: true }));
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     requestAnimationFrame(() => closeBtnRef.current?.focus());
@@ -51,12 +64,14 @@ export default function Lightbox({
     window.addEventListener("keydown", onKey);
     return () => {
       window.removeEventListener("keydown", onKey);
+      window.dispatchEvent(new CustomEvent(LIGHTBOX_EVENT, { detail: false }));
       document.body.style.overflow = prevOverflow;
       lastFocused.current?.focus?.();
     };
   }, [src, onClose]);
 
-  return (
+  if (!mounted) return null;
+  return createPortal(
     <AnimatePresence>
       {src && (
         <motion.div
@@ -72,14 +87,19 @@ export default function Lightbox({
             role="dialog"
             aria-modal="true"
             aria-label={caption ?? "Figure viewer"}
-            className="relative max-h-[80vh] w-full max-w-4xl overflow-hidden rounded-lg border border-line/40 bg-surface"
+            className={`relative overflow-hidden rounded-lg border border-line/40 ${flow ? "max-w-[94vw] bg-white p-3" : "max-h-[80vh] w-full max-w-4xl bg-surface"}`}
+            style={flow ? { width: `min(94vw, 1400px, calc((100vh - 15rem) * ${flow.w / flow.h}))` } : undefined}
             initial={{ scale: 0.96, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.97, opacity: 0 }}
             transition={reduceMotion ? { duration: 0 } : { duration: 0.18 }}
             onClick={(e) => e.stopPropagation()}
           >
-            <img src={src} alt={caption ?? "Figure"} className="h-auto max-h-[76vh] w-full object-contain" />
+            {flow ? (
+              <FlowFigure spec={flow} src={src} alt={caption ?? "Figure"} standalone />
+            ) : (
+              <img src={src} alt={caption ?? "Figure"} className="h-auto max-h-[76vh] w-full object-contain" />
+            )}
           </motion.div>
           {caption && (
             <p className="max-w-2xl text-center font-mono text-xs text-white/70">{caption}</p>
@@ -93,6 +113,7 @@ export default function Lightbox({
           </button>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }

@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import SmoothScroll from "@/components/SmoothScroll";
 import CardSpotlight from "@/components/CardSpotlight";
 import CursorGlow from "@/components/CursorGlow";
+import PauseOffscreen from "@/components/PauseOffscreen";
 import "./globals.css";
 
 // Runs synchronously as the parser reaches it — before React/hydration is
@@ -13,9 +14,15 @@ import "./globals.css";
 // takes to arrive and hydrate.
 const BOOT_SKIP_SCRIPT = `
 (function () {
+  var curtain = document.getElementById("boot-curtain");
+  // Once the fade finishes, take the curtain out of rendering entirely so its
+  // full-screen layer (and blinking cursor) stop costing anything.
+  curtain.addEventListener("animationend", function (e) {
+    if (e.target === curtain) curtain.setAttribute("data-done", "true");
+  });
   try {
     if (sessionStorage.getItem("intro-shown")) {
-      document.getElementById("boot-curtain").setAttribute("data-skip", "true");
+      curtain.setAttribute("data-skip", "true");
     } else {
       sessionStorage.setItem("intro-shown", "1");
     }
@@ -26,7 +33,7 @@ const BOOT_SKIP_SCRIPT = `
 const fraunces = Fraunces({
   subsets: ["latin"],
   variable: "--font-fraunces",
-  weight: ["300", "400", "500", "600", "700", "900"],
+  weight: ["400", "600", "700"], // only the weights the site renders; each listed weight is its own font file
   style: ["normal", "italic"],
   display: "swap",
 });
@@ -68,7 +75,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <CardSpotlight />
           <CursorGlow />
+          <PauseOffscreen />
           <SmoothScroll>{children}</SmoothScroll>
+          <div className="scroll-shield" aria-hidden="true" />
         </ThemeProvider>
       </body>
     </html>

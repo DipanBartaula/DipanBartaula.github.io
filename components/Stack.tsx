@@ -2,8 +2,8 @@
 
 import { stackGroups, type StackItem } from "@/lib/content";
 import Reveal from "./Reveal";
-import { motion } from "framer-motion";
-import { useSafeReducedMotion } from "@/lib/useSafeReducedMotion";
+import type { CSSProperties } from "react";
+import { useReveal } from "@/lib/useReveal";
 
 const groupHue = ["#7c3aed", "#0891b2", "#f97316", "#10b981"];
 
@@ -25,20 +25,21 @@ function Monogram({ name }: { name: string }) {
   );
 }
 
-function Skill({ item, index, reduce }: { item: StackItem; index: number; reduce: boolean }) {
+function Skill({ item, index }: { item: StackItem; index: number }) {
+  // Reveal + hover lift are CSS transitions (.skill-card in globals.css).
+  const [ref, seen] = useReveal<HTMLDivElement>(0.3, "0px");
   return (
-    <motion.div
-      initial={reduce ? false : { opacity: 0, y: 10, scale: 0.96 }}
-      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.45, delay: index * 0.04, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={reduce ? undefined : { y: -3, scale: 1.03 }}
-      className="flex items-center gap-3 rounded-xl border border-line bg-surface2 px-3 py-2.5 transition-colors hover:border-accent/50"
+    <div
+      ref={ref}
+      data-reveal=""
+      data-inview={seen ? "true" : "false"}
+      style={{ "--rd": `${index * 0.04}s` } as CSSProperties}
+      className="skill-card flex items-center gap-3 rounded-xl border border-line bg-surface2 px-3 py-2.5 hover:border-accent/50"
     >
       <span className="h-9 w-9 shrink-0 overflow-hidden rounded-lg border border-line bg-white p-1.5">
         {item.icon ? (
           /* eslint-disable-next-line @next/next/no-img-element */
-          <img src={item.icon} alt="" className="h-full w-full object-contain" loading="lazy" />
+          <img src={item.icon} alt="" className="h-full w-full object-contain" loading="lazy" decoding="async" />
         ) : (
           <Monogram name={item.name} />
         )}
@@ -49,7 +50,7 @@ function Skill({ item, index, reduce }: { item: StackItem; index: number; reduce
           <span className="mt-0.5 block font-mono text-[0.64rem] leading-snug text-inkfaint">{item.note}</span>
         )}
       </span>
-    </motion.div>
+    </div>
   );
 }
 
@@ -62,7 +63,7 @@ function LogoMarquee() {
         {loop.map((it, i) => (
           <span key={`${it.name}-${i}`} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-line bg-white p-2" title={it.name}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={it.icon} alt="" className="h-full w-full object-contain" loading="lazy" />
+            <img src={it.icon} alt="" className="h-full w-full object-contain" loading="lazy" decoding="async" />
           </span>
         ))}
       </div>
@@ -71,13 +72,12 @@ function LogoMarquee() {
 }
 
 export default function Stack() {
-  const reduce = useSafeReducedMotion();
   return (
     <section id="stack" className="relative border-t border-line py-14 sm:py-20">
       <div className="mx-auto max-w-content px-5 sm:px-8">
         <Reveal>
           <div className="eyebrow">
-            <span className="idx">§6</span>Stack
+            <span className="idx">§7</span>Stack
           </div>
         </Reveal>
         <Reveal delay={0.05}>
@@ -99,7 +99,7 @@ export default function Stack() {
                   <p className="mt-0.5 font-mono text-[0.7rem] uppercase tracking-wide text-inkfaint">{g.tagline}</p>
                   <div className="mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
                     {g.items.map((it, i) => (
-                      <Skill key={it.name} item={it} index={i} reduce={reduce} />
+                      <Skill key={it.name} item={it} index={i} />
                     ))}
                   </div>
                 </div>

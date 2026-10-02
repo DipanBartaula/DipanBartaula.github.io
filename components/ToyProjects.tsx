@@ -1,18 +1,27 @@
+"use client";
+
+import { useState } from "react";
 import { toyProjects } from "@/lib/content";
 import Reveal from "./Reveal";
+import Lightbox from "./Lightbox";
+import FlowFigure from "./FlowFigure";
+import { srcSet } from "@/lib/img";
+import { FLOWS, type FlowSpec } from "@/lib/flows";
 
 export default function ToyProjects() {
+  const [box, setBox] = useState<{ src: string; caption?: string; flow?: FlowSpec } | null>(null);
+
   return (
     <section id="toys" className="relative border-t border-line py-14 sm:py-20">
       <div className="mx-auto max-w-content px-5 sm:px-8">
         <Reveal>
           <div className="eyebrow">
-            <span className="idx">§8</span>Toy Projects
+            <span className="idx">§5</span>Toy Projects
           </div>
         </Reveal>
         <Reveal delay={0.05}>
           <p className="mt-4 max-w-prose text-inksoft">
-            Smaller, self-contained builds — finished for the fun of it, and on GitHub.
+            Smaller, self-contained builds — finished for the fun of it, and on GitHub. Click a diagram to enlarge it.
           </p>
         </Reveal>
         <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -23,10 +32,33 @@ export default function ToyProjects() {
                 style={{ ["--card-accent" as string]: i === 0 ? "#10b981" : "#f97316" }}
               >
                 <div className="h-1.5 w-full" style={{ background: `linear-gradient(90deg, ${i === 0 ? "#10b981" : "#f97316"}, var(--accent2), transparent)` }} />
-                <div className="overflow-hidden border-b border-line bg-surface2">
+                {"flow" in t && t.flow ? (
+                  <div className="border-b border-line bg-white p-2.5">
+                    <FlowFigure
+                      spec={FLOWS[t.flow]}
+                      src={t.image}
+                      srcSet={srcSet(t.image, 2400)}
+                      sizes="(min-width: 1024px) 520px, 100vw"
+                      alt={`${t.title} — system diagram`}
+                      onOpen={() => setBox({ src: t.image, caption: `${t.title} — ${t.subtitle}`, flow: FLOWS[t.flow] })}
+                    />
+                  </div>
+                ) : (
+                <button
+                  type="button"
+                  onClick={() => setBox({ src: t.image, caption: `${t.title} — ${t.subtitle}` })}
+                  className="group block w-full cursor-zoom-in overflow-hidden border-b border-line bg-white"
+                  aria-label={`Enlarge the ${t.title} diagram`}
+                >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={t.image} alt={`${t.title} — schematic`} className="block aspect-[16/9] w-full object-cover" loading="lazy" />
-                </div>
+                  <img
+                    src={t.image}
+                    alt={`${t.title} — system diagram`}
+                    className="block aspect-[16/9] w-full object-contain transition-transform duration-500 ease-out group-hover:scale-[1.015]"
+                    loading="lazy" decoding="async"
+                  />
+                </button>
+                )}
                 <div className="flex flex-1 flex-col p-6">
                   <h3 className="font-display text-[1.15rem] font-semibold leading-snug">{t.title}</h3>
                   <p className="mt-1 font-mono text-[0.7rem] uppercase tracking-wide text-inkfaint">{t.subtitle}</p>
@@ -53,6 +85,7 @@ export default function ToyProjects() {
           ))}
         </div>
       </div>
+      <Lightbox src={box?.src ?? null} caption={box?.caption} flow={box?.flow} onClose={() => setBox(null)} />
     </section>
   );
 }

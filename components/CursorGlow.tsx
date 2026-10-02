@@ -29,13 +29,14 @@ export default function CursorGlow() {
   return (
     <motion.div
       aria-hidden="true"
-      className="pointer-events-none fixed left-0 top-0 z-[35] h-8 w-8 -translate-x-1/2 -translate-y-1/2 rounded-full mix-blend-multiply dark:mix-blend-screen"
+      // No mix-blend-mode / blur filter: a blended fixed layer forces the whole
+      // page beneath it to be re-composited on every pointer move and scroll frame.
+      className="pointer-events-none fixed left-0 top-0 z-[35] h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full"
       style={{
         x: sx,
         y: sy,
-        background: "radial-gradient(circle, var(--accent) 0%, transparent 70%)",
-        opacity: 0.35,
-        filter: "blur(6px)",
+        background: "radial-gradient(circle, var(--accent) 0%, transparent 65%)",
+        opacity: 0.28,
       }}
     />
   );

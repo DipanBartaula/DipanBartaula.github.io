@@ -28,10 +28,14 @@ export default function About() {
             <figure className="glow-card overflow-hidden rounded-2xl border border-line bg-surface shadow-[var(--shadow)]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/images/abstract.jpg"
+                src="/images/abstract-960.webp"
+                srcSet="/images/abstract-640.webp 640w, /images/abstract-960.webp 960w, /images/abstract.webp 1280w"
+                sizes="(min-width: 1024px) 470px, 100vw"
+                width={1280}
+                height={1024}
                 alt="Stylised neural network radiating from a chip, surrounded by a particle field"
-                className="block aspect-[5/4] w-full object-cover"
-                loading="lazy"
+                className="block aspect-[5/4] h-auto w-full object-cover"
+                loading="lazy" decoding="async"
               />
               <figcaption className="flex justify-end px-4 py-2 font-mono text-[0.66rem] text-inkfaint">
                 <a

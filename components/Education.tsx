@@ -19,7 +19,7 @@ export default function Education() {
                   style={{ background: e.logoBg }}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={e.logo} alt={`${e.school} logo`} className="max-h-full max-w-full object-contain" loading="lazy" />
+                  <img src={e.logo} alt={`${e.school} logo`} className="max-h-full max-w-full object-contain" loading="lazy" decoding="async" />
                 </div>
                 <div className="min-w-0">
                   <div className="font-mono text-[0.74rem] tabular-nums text-inkfaint">{e.yr}</div>

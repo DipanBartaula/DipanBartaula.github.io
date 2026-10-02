@@ -19,7 +19,7 @@ export default function Hobbies() {
               <TiltFigure className="glow-card flex h-full w-full flex-col content-start items-stretch overflow-hidden rounded-2xl border border-line bg-surface text-left shadow-[var(--shadow)]">
                 <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface2">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={h.image} alt={h.title} className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
+                  <img src={h.image} alt={h.title} className="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async" />
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
                 </div>
                 <div className="p-4">

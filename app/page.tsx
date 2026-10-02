@@ -48,10 +48,10 @@ export default function Page() {
         <Research />
         <Log />
         <Projects />
+        <ToyProjects />
         <Results />
         <Stack />
         <RepoIndex />
-        <ToyProjects />
         <Hobbies />
       </main>
       <Footer />

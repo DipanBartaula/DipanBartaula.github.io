@@ -5,7 +5,7 @@ import { useTheme } from "next-themes";
 
 type Point = { bx: number; by: number; i: number; j: number; ph: number; x?: number; y?: number };
 
-export default function MeshCanvas() {
+export default function MeshCanvas({ active = true }: { active?: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { resolvedTheme } = useTheme();
   const mouse = useRef({ x: -9999, y: -9999, active: false });
@@ -112,8 +112,8 @@ export default function MeshCanvas() {
     canvas.addEventListener("mousemove", onMove);
     canvas.addEventListener("mouseleave", onLeave);
 
-    if (reduced) {
-      draw(0);
+    if (reduced || !active) {
+      draw(performance.now());
     } else {
       const loop = (t: number) => {
         draw(t);
@@ -128,7 +128,7 @@ export default function MeshCanvas() {
       canvas.removeEventListener("mouseleave", onLeave);
       cancelAnimationFrame(raf);
     };
-  }, [resolvedTheme]);
+  }, [resolvedTheme, active]);
 
   return (
     <canvas

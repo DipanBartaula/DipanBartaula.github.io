@@ -10,8 +10,9 @@ import { competitions } from "@/lib/content";
 export default function CompetitionOrbit() {
   const n = competitions.length;
   return (
-    <div className="orbit-wrap mx-auto mt-8 w-full max-w-[420px]">
-      <div className="orbit relative aspect-square w-full">
+    <div className="orbit-wrap mx-auto w-full max-w-[400px]">
+      {/* logos sit ~9% outside the square, so it's inset on every side to keep them clear of neighbours */}
+      <div className="orbit relative mx-auto my-[9%] aspect-square w-[82%]">
         {/* rings */}
         <div className="absolute inset-[13%] rounded-full border border-dashed border-line" />
         <div className="absolute inset-[34%] rounded-full border border-line/70" />
@@ -38,16 +39,16 @@ export default function CompetitionOrbit() {
                   title={c.name}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={c.logo} alt={c.name} className="max-h-full max-w-full object-contain" loading="lazy" />
+                  <img src={c.logo} alt={c.name} className="max-h-full max-w-full object-contain" loading="lazy" decoding="async" />
                 </div>
               </div>
             );
           })}
         </div>
       </div>
-      <ul className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 font-mono text-[0.66rem] text-inkfaint">
+      <ul className="grid grid-cols-1 gap-y-1 text-center font-mono text-[0.66rem] text-inkfaint sm:grid-cols-2 sm:gap-x-4 sm:text-left">
         {competitions.map((c) => (
-          <li key={c.name} className="truncate">· {c.name}</li>
+          <li key={c.name}>· {c.name}</li>
         ))}
       </ul>
     </div>

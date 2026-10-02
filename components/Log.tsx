@@ -41,7 +41,7 @@ export default function Log() {
                   style={{ background: e.logoBg }}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={e.logo} alt={`${e.org} logo`} className="max-h-full max-w-full object-contain" loading="lazy" />
+                  <img src={e.logo} alt={`${e.org} logo`} className="max-h-full max-w-full object-contain" loading="lazy" decoding="async" />
                 </div>
               </motion.article>
             </Reveal>

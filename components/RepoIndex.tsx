@@ -21,7 +21,7 @@ export default function RepoIndex() {
       <div className="mx-auto max-w-content px-5 sm:px-8">
         <Reveal>
           <div className="eyebrow">
-            <span className="idx">§7</span>Repository Index
+            <span className="idx">§8</span>Repository Index
           </div>
         </Reveal>
         <Reveal delay={0.05}>
@@ -35,8 +35,8 @@ export default function RepoIndex() {
             >
               github.com/DipanBartaula
             </a>{" "}
-            — simulation code, agentic systems, and a few architectures rebuilt from scratch to
-            understand them properly. Filter by domain or sort by signal.
+            — architectures rebuilt from scratch in C/CUDA to understand them properly, plus
+            systems and big-data pipelines. Filter by domain or sort by signal.
           </p>
         </Reveal>
 

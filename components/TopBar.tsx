@@ -1,28 +1,76 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { sections } from "@/lib/content";
 import { useActiveSection } from "@/lib/useActiveSection";
+import { subscribeLenis } from "@/lib/lenisSingleton";
 import ThemeToggle from "./ThemeToggle";
 
 export default function TopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
-  const [progress, setProgress] = useState(0);
+  const barRef = useRef<HTMLDivElement>(null);
   const active = useActiveSection();
 
+  // The progress bar is driven straight on the DOM — no React state — so
+  // scrolling never re-renders the nav (and its layout-animated pill). With
+  // Lenis active it reads Lenis's own progress value, so nothing touches
+  // layout mid-frame; the native fallback (reduced motion) caches the page
+  // height and only re-measures it when the document actually resizes.
   useEffect(() => {
-    const onScroll = () => {
-      const h = document.documentElement;
-      const max = h.scrollHeight - h.clientHeight;
-      setProgress(max > 0 ? h.scrollTop / max : 0);
+    const set = (p: number) => {
+      if (barRef.current) barRef.current.style.transform = `scaleX(${Math.min(1, Math.max(0, p))})`;
     };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    let detachNative: (() => void) | null = null;
+    const attachNative = () => {
+      let max = 1;
+      let frame = 0;
+      const measure = () => {
+        const h = document.documentElement;
+        max = Math.max(1, h.scrollHeight - h.clientHeight);
+      };
+      const paint = () => {
+        frame = 0;
+        set(window.scrollY / max);
+      };
+      const onScroll = () => {
+        if (!frame) frame = requestAnimationFrame(paint);
+      };
+      measure();
+      paint();
+      const ro = new ResizeObserver(() => {
+        measure();
+        onScroll();
+      });
+      ro.observe(document.body);
+      window.addEventListener("scroll", onScroll, { passive: true });
+      return () => {
+        ro.disconnect();
+        window.removeEventListener("scroll", onScroll);
+        cancelAnimationFrame(frame);
+      };
+    };
+    let detachLenis: (() => void) | null = null;
+    const unsubscribe = subscribeLenis((lenis) => {
+      detachLenis?.();
+      detachLenis = null;
+      detachNative?.();
+      detachNative = null;
+      if (lenis) {
+        set(lenis.progress || 0);
+        detachLenis = lenis.on("scroll", (l: { progress: number }) => set(l.progress));
+      } else {
+        detachNative = attachNative();
+      }
+    });
+    return () => {
+      unsubscribe();
+      detachLenis?.();
+      detachNative?.();
+    };
   }, []);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-bg/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-line bg-bg/90 backdrop-blur-md">
       <div className="mx-auto flex max-w-content items-center justify-between gap-3 px-5 py-3.5 sm:gap-4 sm:px-8">
         <div className="min-w-0 truncate font-mono text-[0.78rem] tracking-wide">
           <b className="font-bold text-ink">D. BARTAULA</b>{" "}
@@ -76,9 +124,10 @@ export default function TopBar({ onOpenPalette }: { onOpenPalette: () => void })
       </div>
       <div className="h-[2px] w-full bg-line/60">
         <div
-          className="h-full transition-[width] duration-200 ease-out"
+          ref={barRef}
+          className="h-full w-full origin-left"
           style={{
-            width: `${Math.min(100, Math.max(0, progress * 100))}%`,
+            transform: "scaleX(0)",
             background: "linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3))",
           }}
         />

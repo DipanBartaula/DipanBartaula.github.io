@@ -41,6 +41,19 @@ export default function ContactCTA({ size = "md" }: { size?: "md" | "lg" }) {
         </svg>
         Message me on LinkedIn
       </motion.a>
+      <motion.a
+        href={contactLinks.cv}
+        download="Dipan_Bartaula_CV.pdf"
+        whileHover={hover}
+        whileTap={tap}
+        transition={{ type: "spring", stiffness: 380, damping: 22 }}
+        className={`inline-flex items-center gap-2.5 rounded-full border-2 border-line bg-surface font-semibold text-ink transition-colors hover:border-accent hover:text-accent ${pad}`}
+      >
+        <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M8 2v8M4.5 6.8 8 10.3l3.5-3.5M2.5 13.5h11" />
+        </svg>
+        Download CV
+      </motion.a>
     </div>
   );
 }

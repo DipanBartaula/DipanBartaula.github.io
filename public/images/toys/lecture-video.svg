@@ -1,34 +1,191 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450" font-family="JetBrains Mono, ui-monospace, monospace">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0f1330"/><stop offset="1" stop-color="#1b1f4a"/></linearGradient>
-    <linearGradient id="speed" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#22d3ee"/><stop offset="0.5" stop-color="#fbbf24"/><stop offset="1" stop-color="#22d3ee"/></linearGradient>
-    <marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#8b93ff"/></marker>
-  </defs>
-  <rect width="800" height="450" fill="url(#bg)"/>
-  <g stroke="#fff" stroke-opacity="0.05"><path d="M0 112H800M0 225H800M0 337H800M200 0V450M400 0V450M600 0V450"/></g>
-
-  <!-- pipeline chips -->
-  <g font-size="11" fill="#eef0f6" text-anchor="middle">
-    <rect x="40" y="36" width="130" height="34" rx="8" fill="#151a3a" stroke="#22d3ee"/><text x="105" y="58">WhisperX</text>
-    <rect x="215" y="36" width="150" height="34" rx="8" fill="#151a3a" stroke="#fbbf24"/><text x="290" y="58">o4-mini difficulty</text>
-    <rect x="410" y="36" width="150" height="34" rx="8" fill="#151a3a" stroke="#22d3ee"/><text x="485" y="58">re-time &amp; recompile</text>
-    <rect x="605" y="36" width="155" height="34" rx="8" fill="#151a3a" stroke="#8b93ff"/><text x="682" y="58">Cloudinary · Flask</text>
-  </g>
-  <g stroke="#8b93ff" stroke-width="2" fill="none"><path d="M170 53H208" marker-end="url(#a)"/><path d="M365 53H403" marker-end="url(#a)"/><path d="M560 53H598" marker-end="url(#a)"/></g>
-
-  <!-- waveform / transcript -->
-  <text x="40" y="128" font-size="10" fill="#8b93ff">lecture audio</text>
-  <g stroke="#22d3ee" stroke-width="2" opacity="0.8">
-    <path d="M40 180 v-12 M48 180 v-28 M56 180 v-18 M64 180 v-40 M72 180 v-24 M80 180 v-10 M88 180 v-34 M96 180 v-46 M104 180 v-20 M112 180 v-30 M120 180 v-14 M128 180 v-38 M136 180 v-22 M144 180 v-8 M152 180 v-26 M160 180 v-44 M168 180 v-16 M176 180 v-32 M184 180 v-12 M192 180 v-40 M200 180 v-28 M208 180 v-18 M216 180 v-36 M224 180 v-10 M232 180 v-24 M240 180 v-42 M248 180 v-14 M256 180 v-30 M264 180 v-20 M272 180 v-46 M280 180 v-16 M288 180 v-34 M296 180 v-26 M304 180 v-8 M312 180 v-38 M320 180 v-22 M328 180 v-12 M336 180 v-40 M344 180 v-30 M352 180 v-18 M360 180 v-44 M368 180 v-10 M376 180 v-28 M384 180 v-36 M392 180 v-14 M400 180 v-24 M408 180 v-42 M416 180 v-20 M424 180 v-32 M432 180 v-8 M440 180 v-38 M448 180 v-26 M456 180 v-16 M464 180 v-46 M472 180 v-12 M480 180 v-30 M488 180 v-22 M496 180 v-40 M504 180 v-18 M512 180 v-34 M520 180 v-10 M528 180 v-28 M536 180 v-44 M544 180 v-14 M552 180 v-24 M560 180 v-36 M568 180 v-20 M576 180 v-8 M584 180 v-42 M592 180 v-30 M600 180 v-16 M608 180 v-38 M616 180 v-26 M624 180 v-12 M632 180 v-46 M640 180 v-22 M648 180 v-34 M656 180 v-10 M664 180 v-28 M672 180 v-40 M680 180 v-18 M688 180 v-32 M696 180 v-14 M704 180 v-24 M712 180 v-44 M720 180 v-20 M728 180 v-36 M736 180 v-8 M744 180 v-30 M752 180 v-26 M760 180 v-16"/>
-  </g>
-  <!-- difficulty bands -->
-  <g opacity="0.25"><rect x="40" y="200" width="200" height="120" fill="#22d3ee"/><rect x="240" y="200" width="240" height="120" fill="#fbbf24"/><rect x="480" y="200" width="120" height="120" fill="#22d3ee"/><rect x="600" y="200" width="160" height="120" fill="#fbbf24"/></g>
-  <g font-size="10" text-anchor="middle" fill="#eef0f6"><text x="140" y="222">easy · 1.6×</text><text x="360" y="222">hard · 0.85×</text><text x="540" y="222">easy · 1.5×</text><text x="680" y="222">hard · 0.9×</text></g>
-  <!-- smooth speed curve -->
-  <path d="M40 250 C120 250 160 250 200 260 C240 272 260 300 300 302 C340 304 420 302 460 290 C500 278 520 258 560 256 C600 254 620 290 660 300 C700 308 740 300 760 298" fill="none" stroke="url(#speed)" stroke-width="4" stroke-linecap="round"/>
-  <text x="40" y="345" font-size="10" fill="#8b93ff">playback speed (smoothed)</text>
-  <g font-size="10" fill="#8b93ff" text-anchor="end"><text x="760" y="258">1.6×</text><text x="760" y="312">0.85×</text></g>
-
-  <rect x="40" y="380" width="720" height="40" rx="10" fill="#151a3a" stroke="#8b93ff" stroke-width="1.5"/>
-  <text x="400" y="406" text-anchor="middle" font-size="12" fill="#8b93ff">transcribe → rate difficulty per topic → vary speed smoothly, audio intact → upload · CLI batch mode</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+<style>
+  text{font-family:'Segoe UI',Inter,'Helvetica Neue',Arial,sans-serif;fill:#0f172a}
+  .m{font-family:Consolas,'JetBrains Mono',Menlo,monospace}
+</style>
+<defs>
+  <filter id="sh" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#0f172a" flood-opacity="0.08"/></filter>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"/></marker>
+</defs>
+<rect width="1600" height="900" fill="#ffffff"/>
+<text x="800" y="66" text-anchor="middle" font-size="40" font-weight="700">LLM-Driven Lecture Video Adaptation</text>
+<text x="800" y="104" text-anchor="middle" font-size="20" style="fill:#64748b">Difficulty-aware playback — slows down where the lecture is hard, speeds up where it is easy</text>
+<g filter="url(#sh)"><rect x="53" y="140" width="224" height="250" rx="16" fill="#fff" stroke="#bfdbfe" stroke-width="2"/></g>
+  <path d="M54,157 a16,16 0 0 1 16,-16 h190 a16,16 0 0 1 16,16 v37 h-222 z" fill="#eff6ff"/>
+  <line x1="54" y1="194" x2="276" y2="194" stroke="#bfdbfe" stroke-width="1.5"/>
+  <circle cx="80" cy="167" r="14" fill="#2563eb"/>
+  <text x="80" y="173" text-anchor="middle" font-size="16" font-weight="700" style="fill:#fff">1</text>
+  <text x="103" y="173" font-size="17" font-weight="700">Lecture input</text>
+  <rect x="133" y="223" width="64" height="46" rx="8" fill="none" stroke="#2563eb" stroke-width="3.5"/>
+    <path d="M158,234 L178,246 L158,258 Z" fill="#2563eb"/>
+    <line x1="133" y1="278" x2="197" y2="278" stroke="#2563eb" stroke-width="3.5" stroke-linecap="round" opacity=".35"/>
+    <line x1="133" y1="278" x2="161" y2="278" stroke="#2563eb" stroke-width="3.5" stroke-linecap="round"/>
+  <text x="165" y="312" text-anchor="middle" font-size="15" style="fill:#334155">Video URL sent to</text>
+  <text x="165" y="334" text-anchor="middle" font-size="15" font-weight="600" class="m" style="fill:#334155">POST /process</text>
+  <rect x="75" y="350" width="180" height="26" rx="13" fill="#eff6ff" stroke="#bfdbfe"/>
+  <text x="165" y="368" text-anchor="middle" font-size="13" font-weight="600" class="m" style="fill:#2563eb">Flask REST API</text>
+<line x1="280" y1="265" x2="304" y2="265" stroke="#94a3b8" stroke-width="2.5" marker-end="url(#arr)"/>
+    <line x1="292" y1="273" x2="292" y2="408" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3 4"/>
+    <rect x="230" y="408" width="124" height="26" rx="6" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="292" y="426" text-anchor="middle" font-size="12.5" class="m" style="fill:#64748b">MP4</text>
+<g filter="url(#sh)"><rect x="307" y="140" width="224" height="250" rx="16" fill="#fff" stroke="#a5f3fc" stroke-width="2"/></g>
+  <path d="M308,157 a16,16 0 0 1 16,-16 h190 a16,16 0 0 1 16,16 v37 h-222 z" fill="#ecfeff"/>
+  <line x1="308" y1="194" x2="530" y2="194" stroke="#a5f3fc" stroke-width="1.5"/>
+  <circle cx="334" cy="167" r="14" fill="#0891b2"/>
+  <text x="334" y="173" text-anchor="middle" font-size="16" font-weight="700" style="fill:#fff">2</text>
+  <text x="357" y="173" font-size="17" font-weight="700">Audio extraction</text>
+  <line x1="387" y1="241" x2="387" y2="251" stroke="#0891b2" stroke-width="4.5" stroke-linecap="round"/><line x1="395" y1="234" x2="395" y2="258" stroke="#0891b2" stroke-width="4.5" stroke-linecap="round"/><line x1="403" y1="225" x2="403" y2="267" stroke="#0891b2" stroke-width="4.5" stroke-linecap="round"/><line x1="411" y1="237" x2="411" y2="255" stroke="#0891b2" stroke-width="4.5" stroke-linecap="round"/><line x1="419" y1="220" x2="419" y2="272" stroke="#0891b2" stroke-width="4.5" stroke-linecap="round"/><line x1="427" y1="231" x2="427" y2="261" stroke="#0891b2" stroke-width="4.5" stroke-linecap="round"/><line x1="435" y1="239" x2="435" y2="253" stroke="#0891b2" stroke-width="4.5" stroke-linecap="round"/><line x1="443" y1="227" x2="443" y2="265" stroke="#0891b2" stroke-width="4.5" stroke-linecap="round"/><line x1="451" y1="236" x2="451" y2="256" stroke="#0891b2" stroke-width="4.5" stroke-linecap="round"/>
+  <text x="419" y="312" text-anchor="middle" font-size="15" style="fill:#334155">Full soundtrack</text>
+  <text x="419" y="334" text-anchor="middle" font-size="15" font-weight="600" class="" style="fill:#334155">exported as WAV</text>
+  <rect x="329" y="350" width="180" height="26" rx="13" fill="#ecfeff" stroke="#a5f3fc"/>
+  <text x="419" y="368" text-anchor="middle" font-size="13" font-weight="600" class="m" style="fill:#0891b2">MoviePy</text>
+<line x1="534" y1="265" x2="558" y2="265" stroke="#94a3b8" stroke-width="2.5" marker-end="url(#arr)"/>
+    <line x1="546" y1="273" x2="546" y2="408" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3 4"/>
+    <rect x="484" y="408" width="124" height="26" rx="6" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="546" y="426" text-anchor="middle" font-size="12.5" class="m" style="fill:#64748b">WAV audio</text>
+<g filter="url(#sh)"><rect x="561" y="140" width="224" height="250" rx="16" fill="#fff" stroke="#ddd6fe" stroke-width="2"/></g>
+  <path d="M562,157 a16,16 0 0 1 16,-16 h190 a16,16 0 0 1 16,16 v37 h-222 z" fill="#f5f3ff"/>
+  <line x1="562" y1="194" x2="784" y2="194" stroke="#ddd6fe" stroke-width="1.5"/>
+  <circle cx="588" cy="167" r="14" fill="#7c3aed"/>
+  <text x="588" y="173" text-anchor="middle" font-size="16" font-weight="700" style="fill:#fff">3</text>
+  <text x="611" y="173" font-size="17" font-weight="700">Transcription</text>
+  <path d="M649,220 h48 a10,10 0 0 1 10,10 v26 a10,10 0 0 1 -10,10 h-30 l-12,12 v-12 h-6 a10,10 0 0 1 -10,-10 v-26 a10,10 0 0 1 10,-10 z" fill="none" stroke="#7c3aed" stroke-width="3.5" stroke-linejoin="round"/>
+    <line x1="651" y1="234" x2="693" y2="234" stroke="#7c3aed" stroke-width="3.5" stroke-linecap="round"/>
+    <line x1="651" y1="245" x2="681" y2="245" stroke="#7c3aed" stroke-width="3.5" stroke-linecap="round"/>
+    <line x1="651" y1="256" x2="687" y2="256" stroke="#7c3aed" stroke-width="3.5" stroke-linecap="round" opacity=".45"/>
+  <text x="673" y="312" text-anchor="middle" font-size="15" style="fill:#334155">Timestamped segments</text>
+  <text x="673" y="334" text-anchor="middle" font-size="15" font-weight="600" class="m" style="fill:#334155">[start, end, text]</text>
+  <rect x="583" y="350" width="180" height="26" rx="13" fill="#f5f3ff" stroke="#ddd6fe"/>
+  <text x="673" y="368" text-anchor="middle" font-size="13" font-weight="600" class="m" style="fill:#7c3aed">WhisperX large-v2</text>
+<line x1="788" y1="265" x2="812" y2="265" stroke="#94a3b8" stroke-width="2.5" marker-end="url(#arr)"/>
+    <line x1="800" y1="273" x2="800" y2="408" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3 4"/>
+    <rect x="738" y="408" width="124" height="26" rx="6" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="800" y="426" text-anchor="middle" font-size="12.5" class="m" style="fill:#64748b">segments JSON</text>
+<g filter="url(#sh)"><rect x="815" y="140" width="224" height="250" rx="16" fill="#fff" stroke="#fde68a" stroke-width="2"/></g>
+  <path d="M816,157 a16,16 0 0 1 16,-16 h190 a16,16 0 0 1 16,16 v37 h-222 z" fill="#fffbeb"/>
+  <line x1="816" y1="194" x2="1038" y2="194" stroke="#fde68a" stroke-width="1.5"/>
+  <circle cx="842" cy="167" r="14" fill="#d97706"/>
+  <text x="842" y="173" text-anchor="middle" font-size="16" font-weight="700" style="fill:#fff">4</text>
+  <text x="865" y="173" font-size="17" font-weight="700">Difficulty scoring</text>
+  <path d="M895.0,258.9 A32,32 0 0 1 910.0,232.9" fill="none" stroke="#059669" stroke-width="8" stroke-linecap="round"/><path d="M913.0,231.2 A32,32 0 0 1 941.0,231.2" fill="none" stroke="#d97706" stroke-width="8" stroke-linecap="round"/><path d="M944.0,232.9 A32,32 0 0 1 959.0,258.9" fill="none" stroke="#e11d48" stroke-width="8" stroke-linecap="round"/><line x1="927" y1="260" x2="945.4" y2="244.5" stroke="#0f172a" stroke-width="3.5" stroke-linecap="round"/><circle cx="927" cy="260" r="5" fill="#0f172a"/>
+  <text x="927" y="312" text-anchor="middle" font-size="15" style="fill:#334155">LLM rates each topic</text>
+  <text x="927" y="334" text-anchor="middle" font-size="15" font-weight="600" class="m" style="fill:#334155">1 (easy) → 10 (hard)</text>
+  <rect x="837" y="350" width="180" height="26" rx="13" fill="#fffbeb" stroke="#fde68a"/>
+  <text x="927" y="368" text-anchor="middle" font-size="13" font-weight="600" class="m" style="fill:#d97706">OpenAI o4-mini</text>
+<line x1="1042" y1="265" x2="1066" y2="265" stroke="#94a3b8" stroke-width="2.5" marker-end="url(#arr)"/>
+    <line x1="1054" y1="273" x2="1054" y2="408" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3 4"/>
+    <rect x="992" y="408" width="124" height="26" rx="6" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="1054" y="426" text-anchor="middle" font-size="12.5" class="m" style="fill:#64748b">difficulty JSON</text>
+<g filter="url(#sh)"><rect x="1069" y="140" width="224" height="250" rx="16" fill="#fff" stroke="#fecdd3" stroke-width="2"/></g>
+  <path d="M1070,157 a16,16 0 0 1 16,-16 h190 a16,16 0 0 1 16,16 v37 h-222 z" fill="#fff1f2"/>
+  <line x1="1070" y1="194" x2="1292" y2="194" stroke="#fecdd3" stroke-width="1.5"/>
+  <circle cx="1096" cy="167" r="14" fill="#e11d48"/>
+  <text x="1096" y="173" text-anchor="middle" font-size="16" font-weight="700" style="fill:#fff">5</text>
+  <text x="1119" y="173" font-size="17" font-weight="700">Adaptive re-timing</text>
+  <rect x="1149" y="220" width="19" height="13" rx="3" fill="#e11d48" opacity="0.45"/><rect x="1170" y="220" width="20" height="13" rx="3" fill="#e11d48" opacity="1"/><rect x="1192" y="220" width="21" height="13" rx="3" fill="#e11d48" opacity="0.45"/><rect x="1149" y="259" width="14" height="13" rx="3" fill="#e11d48" opacity="0.45"/><rect x="1165" y="259" width="32" height="13" rx="3" fill="#e11d48" opacity="1"/><rect x="1199" y="259" width="14" height="13" rx="3" fill="#e11d48" opacity="0.45"/><path d="M1172,236 L1167,256 M1190,236 L1195,256" stroke="#e11d48" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="3 3"/>
+  <text x="1181" y="312" text-anchor="middle" font-size="15" style="fill:#334155">Per-segment speed</text>
+  <text x="1181" y="334" text-anchor="middle" font-size="15" font-weight="600" class="m" style="fill:#334155">0.8× · 1.0× · 1.2×</text>
+  <rect x="1091" y="350" width="180" height="26" rx="13" fill="#fff1f2" stroke="#fecdd3"/>
+  <text x="1181" y="368" text-anchor="middle" font-size="13" font-weight="600" class="m" style="fill:#e11d48">librosa · MoviePy</text>
+<line x1="1296" y1="265" x2="1320" y2="265" stroke="#94a3b8" stroke-width="2.5" marker-end="url(#arr)"/>
+    <line x1="1308" y1="273" x2="1308" y2="408" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3 4"/>
+    <rect x="1246" y="408" width="124" height="26" rx="6" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="1308" y="426" text-anchor="middle" font-size="12.5" class="m" style="fill:#64748b">adapted MP4</text>
+<g filter="url(#sh)"><rect x="1323" y="140" width="224" height="250" rx="16" fill="#fff" stroke="#a7f3d0" stroke-width="2"/></g>
+  <path d="M1324,157 a16,16 0 0 1 16,-16 h190 a16,16 0 0 1 16,16 v37 h-222 z" fill="#ecfdf5"/>
+  <line x1="1324" y1="194" x2="1546" y2="194" stroke="#a7f3d0" stroke-width="1.5"/>
+  <circle cx="1350" cy="167" r="14" fill="#059669"/>
+  <text x="1350" y="173" text-anchor="middle" font-size="16" font-weight="700" style="fill:#fff">6</text>
+  <text x="1373" y="173" font-size="17" font-weight="700">Delivery</text>
+  <path d="M1411,266 h46 a15,15 0 0 0 1,-30 a20,20 0 0 0 -37,-7 a14,14 0 0 0 -10,37 z" fill="none" stroke="#059669" stroke-width="3.5" stroke-linejoin="round"/>
+    <line x1="1435" y1="258" x2="1435" y2="237" stroke="#059669" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M1427,245 L1435,236 L1443,245" fill="none" stroke="#059669" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="1435" y="312" text-anchor="middle" font-size="15" style="fill:#334155">Upload adapted video</text>
+  <text x="1435" y="334" text-anchor="middle" font-size="15" font-weight="600" class="m" style="fill:#334155">→ adapted_video_url</text>
+  <rect x="1345" y="350" width="180" height="26" rx="13" fill="#ecfdf5" stroke="#a7f3d0"/>
+  <text x="1435" y="368" text-anchor="middle" font-size="13" font-weight="600" class="m" style="fill:#059669">Cloudinary</text>
+<rect x="53" y="452" width="1010" height="370" rx="16" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+<text x="78" y="490" font-size="20" font-weight="700">Worked example — re-timing one lecture</text>
+<text x="1038" y="490" text-anchor="end" font-size="14" style="fill:#64748b">difficulty&#160;&#160;→&#160;&#160;playback speed&#160;&#160;→&#160;&#160;new duration</text>
+<text x="78" y="560" font-size="15" font-weight="700">LLM difficulty</text><text x="78" y="579" font-size="13" style="fill:#64748b">score 1 – 10</text>
+<text x="78" y="644" font-size="15" font-weight="700">Original</text><text x="78" y="663" font-size="13" style="fill:#64748b">14:00 total</text>
+<text x="78" y="742" font-size="15" font-weight="700">Adapted</text><text x="78" y="761" font-size="13" style="fill:#64748b">14:20 total</text>
+<line x1="250" y1="536" x2="1030" y2="536" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="5 5"/>
+  <text x="242" y="540" text-anchor="end" font-size="12" class="m" style="fill:#64748b">≥8</text>
+<line x1="250" y1="564.5" x2="1030" y2="564.5" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="5 5"/>
+  <text x="242" y="568.5" text-anchor="end" font-size="12" class="m" style="fill:#64748b">≥5</text>
+<line x1="250" y1="612" x2="1030" y2="612" stroke="#94a3b8" stroke-width="1.5"/>
+<rect x="260" y="593" width="90" height="19" rx="5" fill="#059669" opacity=".85"/>
+  <text x="305" y="585" text-anchor="middle" font-size="15" font-weight="700" style="fill:#059669">2</text>
+<path d="M252,668 L358,668 L339.6666666666667,724 L252,724 Z" fill="#d1fae5" opacity=".75"/>
+<rect x="252" y="626" width="106" height="42" rx="7" fill="#d1fae5" stroke="#6ee7b7" stroke-width="1.5"/>
+  <text x="305" y="653" text-anchor="middle" font-size="14.5" font-weight="600">Intro <tspan class="m" style="fill:#64748b" font-weight="400">2:00</tspan></text>
+  <rect x="252" y="724" width="87.66666666666667" height="42" rx="7" fill="#059669"/>
+  <text x="295.8333333333333" y="751" text-anchor="middle" font-size="14.5" font-weight="700" class="m" style="fill:#fff">1:40</text>
+<rect x="274.4166666666667" y="683" width="52" height="26" rx="13" fill="#fff" stroke="#059669" stroke-width="1.5"/>
+  <text x="300.4166666666667" y="701" text-anchor="middle" font-size="14" font-weight="700" class="m" style="fill:#059669">1.2×</text>
+<rect x="370" y="555" width="145" height="57" rx="5" fill="#4f46e5" opacity=".85"/>
+  <text x="442.5" y="547" text-anchor="middle" font-size="15" font-weight="700" style="fill:#4f46e5">6</text>
+<path d="M362,668 L523,668 L504.6666666666667,724 L343.6666666666667,724 Z" fill="#e0e7ff" opacity=".75"/>
+<rect x="362" y="626" width="161" height="42" rx="7" fill="#e0e7ff" stroke="#a5b4fc" stroke-width="1.5"/>
+  <text x="442.5" y="653" text-anchor="middle" font-size="14.5" font-weight="600">Concepts <tspan class="m" style="fill:#64748b" font-weight="400">3:00</tspan></text>
+  <rect x="343.6666666666667" y="724" width="161" height="42" rx="7" fill="#4f46e5"/>
+  <text x="424.1666666666667" y="751" text-anchor="middle" font-size="14.5" font-weight="700" class="m" style="fill:#fff">3:00</text>
+<rect x="407.33333333333337" y="683" width="52" height="26" rx="13" fill="#fff" stroke="#4f46e5" stroke-width="1.5"/>
+  <text x="433.33333333333337" y="701" text-anchor="middle" font-size="14" font-weight="700" class="m" style="fill:#4f46e5">1.0×</text>
+<rect x="535" y="526.5" width="200" height="85.5" rx="5" fill="#e11d48" opacity=".85"/>
+  <text x="635" y="518.5" text-anchor="middle" font-size="15" font-weight="700" style="fill:#e11d48">9</text>
+<path d="M527,668 L743,668 L779.6666666666667,724 L508.6666666666667,724 Z" fill="#ffe4e6" opacity=".75"/>
+<rect x="527" y="626" width="216" height="42" rx="7" fill="#ffe4e6" stroke="#fda4af" stroke-width="1.5"/>
+  <text x="635" y="653" text-anchor="middle" font-size="14.5" font-weight="600">Derivation <tspan class="m" style="fill:#64748b" font-weight="400">4:00</tspan></text>
+  <rect x="508.6666666666667" y="724" width="271" height="42" rx="7" fill="#e11d48"/>
+  <text x="644.1666666666667" y="751" text-anchor="middle" font-size="14.5" font-weight="700" class="m" style="fill:#fff">5:00</text>
+<rect x="613.5833333333334" y="683" width="52" height="26" rx="13" fill="#fff" stroke="#e11d48" stroke-width="1.5"/>
+  <text x="639.5833333333334" y="701" text-anchor="middle" font-size="14" font-weight="700" class="m" style="fill:#e11d48">0.8×</text>
+<rect x="755" y="564.5" width="145" height="47.5" rx="5" fill="#4f46e5" opacity=".85"/>
+  <text x="827.5" y="556.5" text-anchor="middle" font-size="15" font-weight="700" style="fill:#4f46e5">5</text>
+<path d="M747,668 L908,668 L944.6666666666667,724 L783.6666666666667,724 Z" fill="#e0e7ff" opacity=".75"/>
+<rect x="747" y="626" width="161" height="42" rx="7" fill="#e0e7ff" stroke="#a5b4fc" stroke-width="1.5"/>
+  <text x="827.5" y="653" text-anchor="middle" font-size="14.5" font-weight="600">Example <tspan class="m" style="fill:#64748b" font-weight="400">3:00</tspan></text>
+  <rect x="783.6666666666667" y="724" width="161" height="42" rx="7" fill="#4f46e5"/>
+  <text x="864.1666666666667" y="751" text-anchor="middle" font-size="14.5" font-weight="700" class="m" style="fill:#fff">3:00</text>
+<rect x="819.8333333333334" y="683" width="52" height="26" rx="13" fill="#fff" stroke="#4f46e5" stroke-width="1.5"/>
+  <text x="845.8333333333334" y="701" text-anchor="middle" font-size="14" font-weight="700" class="m" style="fill:#4f46e5">1.0×</text>
+<rect x="920" y="583.5" width="90" height="28.5" rx="5" fill="#059669" opacity=".85"/>
+  <text x="965" y="575.5" text-anchor="middle" font-size="15" font-weight="700" style="fill:#059669">3</text>
+<path d="M912,668 L1018,668 L1036.3333333333335,724 L948.6666666666667,724 Z" fill="#d1fae5" opacity=".75"/>
+<rect x="912" y="626" width="106" height="42" rx="7" fill="#d1fae5" stroke="#6ee7b7" stroke-width="1.5"/>
+  <text x="965" y="653" text-anchor="middle" font-size="14.5" font-weight="600">Recap <tspan class="m" style="fill:#64748b" font-weight="400">2:00</tspan></text>
+  <rect x="948.6666666666667" y="724" width="87.66666666666667" height="42" rx="7" fill="#059669"/>
+  <text x="992.5000000000001" y="751" text-anchor="middle" font-size="14.5" font-weight="700" class="m" style="fill:#fff">1:40</text>
+<rect x="952.75" y="683" width="52" height="26" rx="13" fill="#fff" stroke="#059669" stroke-width="1.5"/>
+  <text x="978.75" y="701" text-anchor="middle" font-size="14" font-weight="700" class="m" style="fill:#059669">1.2×</text>
+<circle cx="88" cy="793" r="10" fill="#e0e7ff"/><text x="88" y="798" text-anchor="middle" font-size="14" font-weight="700" style="fill:#4f46e5">i</text>
+<text x="108" y="798" font-size="15" style="fill:#334155">The dense derivation gets <tspan font-weight="700" style="fill:#e11d48">25% more time</tspan>, while the easy intro and recap play <tspan font-weight="700" style="fill:#059669">1.2× faster</tspan>.</text>
+<rect x="1093" y="452" width="454" height="370" rx="16" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+<text x="1118" y="490" font-size="20" font-weight="700">Speed policy</text>
+<rect x="1113" y="510" width="414" height="64" rx="12" fill="#fff" stroke="#fda4af" stroke-width="1.5"/>
+  <rect x="1113" y="510" width="104" height="64" rx="12" fill="#ffe4e6"/>
+  <rect x="1205" y="510" width="12" height="64" fill="#ffe4e6"/>
+  <text x="1165" y="552" text-anchor="middle" font-size="28" font-weight="800" style="fill:#e11d48">0.8×</text>
+  <text x="1233" y="538" font-size="15.5" font-weight="700">Difficulty 8 – 10 · slow down</text>
+  <text x="1233" y="559" font-size="14" style="fill:#64748b">dense material gets more time</text>
+<rect x="1113" y="586" width="414" height="64" rx="12" fill="#fff" stroke="#a5b4fc" stroke-width="1.5"/>
+  <rect x="1113" y="586" width="104" height="64" rx="12" fill="#e0e7ff"/>
+  <rect x="1205" y="586" width="12" height="64" fill="#e0e7ff"/>
+  <text x="1165" y="628" text-anchor="middle" font-size="28" font-weight="800" style="fill:#4f46e5">1.0×</text>
+  <text x="1233" y="614" font-size="15.5" font-weight="700">Difficulty 5 – 7 · normal pace</text>
+  <text x="1233" y="635" font-size="14" style="fill:#64748b">played as originally recorded</text>
+<rect x="1113" y="662" width="414" height="64" rx="12" fill="#fff" stroke="#6ee7b7" stroke-width="1.5"/>
+  <rect x="1113" y="662" width="104" height="64" rx="12" fill="#d1fae5"/>
+  <rect x="1205" y="662" width="12" height="64" fill="#d1fae5"/>
+  <text x="1165" y="704" text-anchor="middle" font-size="28" font-weight="800" style="fill:#059669">1.2×</text>
+  <text x="1233" y="690" font-size="15.5" font-weight="700">Difficulty 1 – 4 · speed up</text>
+  <text x="1233" y="711" font-size="14" style="fill:#64748b">skims through the easy parts</text>
+<rect x="1113" y="736" width="414" height="76" rx="12" fill="#fff" stroke="#cbd5e1" stroke-dasharray="5 4"/>
+<text x="1131" y="762" font-size="14.5" font-weight="700">Why it still sounds natural</text>
+<text x="1131" y="783" font-size="13.5" style="fill:#334155">Phase-vocoder time-stretch keeps the voice&#8217;s pitch;</text>
+<text x="1131" y="802" font-size="13.5" style="fill:#334155">clips are joined with 0.5 s crossfades.</text>
+<rect x="53" y="842" width="1494" height="38" rx="10" fill="#f1f5f9"/>
+<text x="800" y="867" text-anchor="middle" font-size="15.5" style="fill:#334155">Timestamp-aligned segments&#160;&#160;&#160;•&#160;&#160;&#160;LLM difficulty scoring&#160;&#160;&#160;•&#160;&#160;&#160;Pitch-preserving time-stretch&#160;&#160;&#160;•&#160;&#160;&#160;Crossfaded transitions&#160;&#160;&#160;•&#160;&#160;&#160;REST API delivery</text>
 </svg>

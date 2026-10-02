@@ -1,15 +1,13 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useState, type ReactNode } from "react";
-import { useSafeReducedMotion } from "@/lib/useSafeReducedMotion";
-
-const EASE = [0.22, 1, 0.36, 1] as const;
+import type { CSSProperties, ReactNode } from "react";
+import { useReveal } from "@/lib/useReveal";
 
 /**
- * Scroll-triggered reveal: a soft rise with a touch of de-blur. Sets
- * `data-inview` once visible so CSS (e.g. the eyebrow rule) can react too.
- * Renders a plain, fully visible div under prefers-reduced-motion.
+ * Scroll-triggered reveal: a soft fade-and-rise once the element is in view.
+ * Sets `data-inview` once visible so CSS (e.g. the eyebrow rule) can react too.
+ * The motion is a compositor-only CSS transition ([data-reveal] in
+ * globals.css); under prefers-reduced-motion the content is simply visible.
  */
 export default function Reveal({
   children,
@@ -20,29 +18,16 @@ export default function Reveal({
   delay?: number;
   className?: string;
 }) {
-  const reduceMotion = useSafeReducedMotion();
-  const [seen, setSeen] = useState(false);
-
-  if (reduceMotion) {
-    return (
-      <div className={className} data-inview="true">
-        {children}
-      </div>
-    );
-  }
-
+  const [ref, seen] = useReveal<HTMLDivElement>();
   return (
-    <motion.div
+    <div
+      ref={ref}
       className={className}
+      data-reveal=""
       data-inview={seen ? "true" : "false"}
-      initial={{ opacity: 0, y: 26, filter: "blur(6px)" }}
-      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-      onViewportEnter={() => setSeen(true)}
-      viewport={{ once: true, amount: 0.15, margin: "0px 0px -60px 0px" }}
-      transition={{ duration: 0.85, delay, ease: EASE }}
-      style={{ willChange: "transform, opacity, filter" }}
+      style={delay ? ({ "--rd": `${delay}s` } as CSSProperties) : undefined}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
