@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CURVTON-205K: A Mask-Free Difficulty-Stratified Synthetic Dataset for Virtual Try-On</title>
+<meta name="description" content="CURVTON-205K: 205K curated, mask-free virtual try-on triplets in three difficulty tiers, built with a VLM-guided generation and curation pipeline.">
+<meta property="og:title" content="CURVTON-205K: A Mask-Free Difficulty-Stratified Synthetic Dataset for Robust and Scalable Virtual Try-On">
+<meta property="og:description" content="205K curated mask-free try-on triplets · 200 garment types · easy / medium / hard tiers · evaluated across four VTON architectures.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="static/img/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#fbf9f6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f0e12" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23141217'/%3E%3Cpath d='M22 14l-10 8 5 8 5-3v23h20V27l5 3 5-8-10-8c-2 4-6 6-10 6s-8-2-10-6z' fill='%23eb6834'/%3E%3C/svg%3E">
+<link rel="preload" href="static/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="static/fonts/fraunces-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="static/fonts/fraunces-italic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="static/css/style.css">
+<script>
+  document.documentElement.classList.add("js");
+  try { var t = localStorage.getItem("curvton-theme"); if (t) document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+</script>
+</head>
+<body>
+<a class="skip" href="#overview">Skip to content</a>
+<div class="progress" id="progress" aria-hidden="true"></div>
+
+<nav class="topnav" id="topnav" aria-label="Sections">
+  <div class="wrap">
+    <a class="brand" href="#top">CURVTON<b>-205K</b></a>
+    <div class="navlinks" id="navlinks">
+      <a href="#overview">Overview</a>
+      <a href="#pipeline">Pipeline</a>
+      <a href="#refine">Refinement</a>
+      <a href="#tiers">Tiers</a>
+      <a href="#diversity">Diversity</a>
+      <a href="#results">Results</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#data">Data</a>
+      <a href="#cite">BibTeX</a>
+    </div>
+    <button class="icon-btn theme-btn" type="button" aria-label="Toggle dark mode">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <button class="icon-btn theme-btn theme-float" type="button" aria-label="Toggle dark mode">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+  </button>
+  <div class="wrap">
+    <span class="eyebrow"><span class="dot"></span>Dataset · Virtual Try-On · 2026</span>
+    <h1>CURVTON<span class="k">-205K</span></h1>
+    <p class="subtitle">A <em>Mask-Free</em>, <em>Difficulty-Stratified</em> Synthetic Dataset for Robust and Scalable Virtual Try-On</p>
+
+    <div class="authors">
+      <span>Dipan Bartaula<sup>1,6,&dagger;</sup></span>
+      <span>Anuj Shrestha<sup>1</sup></span>
+      <span>Ankit Belbase<sup>1</sup></span>
+      <span>Anish Bishwakarma<sup>1</sup></span>
+      <span>Saroj Poudel<sup>1</sup></span>
+      <span>Samip Ghimire<sup>1</sup></span>
+      <span>Shashank Bhatta<sup>1</sup></span>
+      <span>Eric Arazo<sup>2,3</sup></span>
+      <span>Binod Bhattarai<sup>2,4,5,6</sup></span>
+    </div>
+    <div class="affils">
+      <span><sup>1</sup>Department of Electronics and Computer Engineering, IOE Pulchowk Campus, Tribhuvan University, Lalitpur, Nepal</span>
+      <span><sup>2</sup>FogSphere, London, UK</span>
+      <span><sup>3</sup>University College Dublin, Dublin, Ireland</span>
+      <span><sup>4</sup>School of Natural and Computing Sciences, University of Aberdeen, Aberdeen, UK</span>
+      <span><sup>5</sup>University College London, London, UK</span>
+      <span><sup>6</sup>NAAMII, Kathmandu, Nepal</span>
+    </div>
+    <div class="corr"><sup>&dagger;</sup>Corresponding author: <a href="mailto:deepanzcreed001@gmail.com">deepanzcreed001@gmail.com</a></div>
+
+    <div class="buttons">
+      <a class="btn" href="static/pdf/CURVTON-205K.pdf" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M6 2h8l6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm7 1.5V9h5.5L13 3.5zM8 13h8v1.6H8V13zm0 3.4h8V18H8v-1.6z"/></svg>Paper</a>
+      <a class="btn ghost disabled" href="#" aria-disabled="true" tabindex="-1">
+        <svg viewBox="0 0 24 24"><path d="M4 4h6l2 3h8v13H4V4zm2 2v12h12V9h-7.1l-2-3H6z"/></svg>arXiv <small>soon</small></a>
+      <a class="btn" href="https://github.com/curvton/CURVTON-205K_CODE" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>Code</a>
+      <a class="btn" href="https://huggingface.co/datasets/curvton2/curvton2" target="_blank" rel="noopener">
+        <span class="emoji" aria-hidden="true">🤗</span>Dataset</a>
+      <a class="btn ghost" href="#cite">
+        <svg viewBox="0 0 24 24"><path d="M7 6h4v5H8.5c0 2 .8 3 2.5 3.5V17c-3.2-.4-5-2.6-5-6.5V6zm8 0h4v5h-2.5c0 2 .8 3 2.5 3.5V17c-3.2-.4-5-2.6-5-6.5V6z"/></svg>BibTeX</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<section class="teaser" aria-label="Interactive try-on preview" style="padding-top:26px">
+  <div class="wrap">
+    <div class="stage" id="stage">
+      <div class="cmp" id="heroCmp" role="slider" tabindex="0" aria-label="Compare source person and try-on" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+        <img class="cmp-a" alt="Source person" draggable="false">
+        <div class="cmp-layer"><div class="inner"><img class="cmp-b" alt="Synthesized try-on" draggable="false"></div></div>
+        <div class="cmp-handle"><span class="cmp-knob"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l-6 6 6 6M15 6l6 6-6 6"/></svg></span></div>
+        <span class="cmp-tag l">Source person</span>
+        <span class="cmp-tag r">Try-on</span>
+        <span class="cmp-hint">Drag to compare</span>
+      </div>
+      <div class="side">
+        <div class="garment-card">
+          <div class="gimg" id="heroGarment"></div>
+          <div class="ginfo">
+            <div class="lbl"><span>Target garment</span><span class="chip" id="heroTier"><i class="t-e"></i>Easy</span></div>
+            <div class="gmeta"><div class="gname" id="heroName">&nbsp;</div></div>
+            <div class="eq"><b>person</b> + <b>garment</b> &rarr; <b>try-on</b>, no masks, no dense pose</div>
+          </div>
+        </div>
+        <div class="stage-ctrl">
+          <span class="note" style="margin:0" id="heroCount">1 / 8</span>
+          <button class="pill-btn" id="heroPlay" type="button" aria-label="Pause autoplay"><svg viewBox="0 0 16 16"><path d="M4 3h3v10H4zM9 3h3v10H9z"/></svg><span>Pause</span></button>
+        </div>
+        <div class="rail" id="heroRail" aria-label="Choose an example"></div>
+      </div>
+    </div>
+    <p class="caption"><b>Every CURVTON-205K sample is a mask-free triplet</b>: a source person, an in-shop garment, and the synthesized try-on, all at 1024&times;1024. Drag the handle (or use &larr; &rarr;) to compare, and pick other examples from all three difficulty tiers. Examples come from the public sample split on Hugging Face.</p>
+
+    <div class="stats" id="stats">
+      <div class="stat"><div class="num" data-to="205" data-suffix="K">0</div><div class="lbl">curated training triplets</div></div>
+      <div class="stat"><div class="num" data-to="4.5" data-dec="1" data-suffix="K">0</div><div class="lbl">held-out test triplets, human-verified</div></div>
+      <div class="stat"><div class="num" data-to="200">0</div><div class="lbl">garment types, incl. long-tail &amp; traditional</div></div>
+      <div class="stat"><div class="num" data-to="3">0</div><div class="lbl">difficulty tiers: easy, medium, hard</div></div>
+      <div class="stat"><div class="num" data-to="0" data-static="1">0</div><div class="lbl">parsing masks or dense-pose maps needed</div></div>
+      <div class="stat"><div class="num" data-to="4">0</div><div class="lbl">VTON architectures evaluated</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="overview">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">Overview</div>
+      <h2>Robust try-on is a data problem, too</h2>
+      <p class="lead">Try-on models still break on occlusions, unusual poses and under-represented garments. We argue those failures come as much from <b>dataset coverage</b> as from architecture, and build a dataset to test that.</p>
+    </div>
+    <div class="tldr">
+      <div class="tl reveal"><div class="k">In-domain</div><div class="big">&asymp;2&times; <small>lower FID</small></div><p>Training on CURVTON-205K at least halves test-set FID for all three architectures trained on it, e.g. IDM-VTON 17.05 &rarr; 8.44, CatVTON 23.85 &rarr; 9.14.</p></div>
+      <div class="tl reveal"><div class="k">In-the-wild transfer</div><div class="big">&minus;4.9 to &minus;8.9 <small>FID</small></div><p>Adding CURVTON to real training data lowers StreetTryOn FID for all four architectures, the best FID and KID in every case.</p></div>
+      <div class="tl reveal"><div class="k">Human preference</div><div class="big">35% <small>/ 28%</small></div><p>OOTDiffusion trained on CURVTON wins blind pairwise comparisons for try-on quality and realism (20 annotators, six systems).</p></div>
+    </div>
+    <div class="card pad reveal">
+      <h3 style="margin-bottom:12px">Abstract</h3>
+      <div class="abstract">
+        <p>Recent advances in 2D virtual try-on (VTON) have largely focused on architectural innovation, yet robust performance in diverse real-world conditions remains challenging. We argue that failure modes in VTON, such as inaccurate occlusion handling, unconstrained poses, and poor coverage of under-represented garments and appearance factors, are tightly coupled to dataset design choices and long-tail data regimes. We present a scalable data generation pipeline that coordinates specialized editing and generation models with vision-language model (VLM) guidance to synthesize triplets <b>without requiring parsing masks or dense-pose annotations</b>.</p>
+        <p>Using this pipeline, we create <b>CURVTON-205K</b>, a curated synthetic dataset of 205K triplets: source person, target garment, and corresponding try-on image. CURVTON-205K is explicitly designed to broaden coverage across garments, person appearance, poses, occlusions, and visual conditions. Additionally, it is organized into <b>three difficulty tiers</b>, enabling controlled evaluation under varying levels of difficulty and supporting difficulty-aware experimentation. We analyze the dataset diversity and demonstrate its potential to improve try-on fidelity across four VTON architectures and its cross-dataset generalization.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pipeline" class="band">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">Pipeline</div>
+      <h2>Four streams, one closed loop</h2>
+      <p class="lead">Garments, people and difficulty edits are generated separately, then merged into try-on triplets that a VLM checks and sends back for regeneration until they pass. A learned filter does the final cut.</p>
+    </div>
+    <div class="pipe reveal" id="pipe">
+      <div class="card" style="padding:14px 14px 10px">
+        <div class="pipe-scroll" id="pipeScroll"><svg class="pipe-svg" id="pipeSvg" viewBox="0 0 1280 560" role="img" aria-label="Animated diagram of the CURVTON-205K generation pipeline"></svg></div>
+        <div class="pipe-legend" aria-hidden="true">
+          <span><i style="background:var(--accent)"></i>garment</span>
+          <span><i style="background:var(--real)"></i>person</span>
+          <span><i style="background:var(--violet)"></i>difficulty edit</span>
+          <span><i style="background:var(--mix)"></i>try-on triplet</span>
+          <span><i style="background:var(--reject)"></i>rejected &rarr; refined prompt</span>
+        </div>
+        <div class="swipe-hint">Swipe the diagram sideways &rarr;</div>
+      </div>
+      <div class="steps" id="steps" role="tablist" aria-label="Pipeline stages"></div>
+      <div class="card step-detail" id="stepDetail" aria-live="polite"></div>
+      <details class="paperfig"><summary>Show the original pipeline figure from the paper (Fig. 2)</summary><img class="paperimg" src="static/img/paper/pipeline_fig2.jpg" width="2000" height="1528" alt="Figure 2 from the paper: data generation pipeline" loading="lazy"></details>
+    </div>
+  </div>
+</section>
+
+<section id="refine">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">Closed-loop refinement</div>
+      <h2>The VLM loop removes most artifacts</h2>
+      <p class="lead">When Qwen3-VL&nbsp;32B rejects a try-on, the failure reason is written back into the prompt and the image is regenerated, up to four times. On hard samples the artifact rate falls from <b>60% to 5%</b>.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card chart-card reveal" id="refineCard">
+        <div class="chart-head">
+          <div><h3>Artifact rate by refinement round</h3><div class="sub">% of try-on candidates with artifacts (Table 6)</div></div>
+          <div class="controls"><div class="seg" id="refineSplit"><button aria-pressed="true" data-v="train">Train</button><button aria-pressed="false" data-v="test">Test</button></div><button class="tbl-toggle" aria-pressed="false">Table</button></div>
+        </div>
+        <div class="legend" id="refineLegend"></div>
+        <div class="chart" id="refineChart"></div>
+        <div class="tbl-view"></div>
+        <div class="refine-stats" id="refineStats"></div>
+        <p class="note">Before try-on, the generated people and garments themselves carry 17/25/35% artifacts (easy/medium/hard), cut to 3/4.4/5.7% by a separate VLM filter.</p>
+      </div>
+      <div class="card chart-card reveal" id="robustCard">
+        <div class="chart-head">
+          <div><h3>Does it depend on the models?</h3><div class="sub">Artifact rate before (round 0) &rarr; after (round IV), Table 7</div></div>
+          <div class="controls"><div class="seg" id="robustTier"><button aria-pressed="false" data-v="0">Easy</button><button aria-pressed="false" data-v="1">Medium</button><button aria-pressed="true" data-v="2">Hard</button></div><button class="tbl-toggle" aria-pressed="false">Table</button></div>
+        </div>
+        <div class="legend"><span><i class="dot" style="background:var(--neutral)"></i>Round 0</span><span><i class="dot" style="background:var(--accent)"></i>Round IV</span></div>
+        <div class="chart" id="robustChart"></div>
+        <div class="tbl-view"></div>
+        <p class="note" id="robustNote">Table 7 is a separate <b>small-scale screening run</b>, so its rates differ from the full-dataset run in Table 6 (e.g. hard 66&rarr;14% here vs 60&rarr;5% there). The drop holds for every generator&ndash;evaluator pair, and Qwen3-VL (which sees the whole triplet) beats PaliGemma (which sees only the output).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tiers" class="band">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">Difficulty tiers</div>
+      <h2>Easy, medium, hard, by design</h2>
+      <p class="lead">Each source person is edited with tier-specific instructions that raise pose deviation, occlusion, clutter and viewpoint change: <b>100K edited people per tier</b>. Tiers let you see <i>where</i> a model breaks, not just its average.</p>
+    </div>
+    <div class="tier-tabs reveal" role="tablist" id="tierTabs">
+      <button class="tier-tab" role="tab" aria-selected="true" data-t="easy" style="--tc:var(--t-easy)"><span class="sq" style="background:var(--t-easy)">E</span><span><b>Easy</b><small>near-frontal, clean backgrounds</small></span></button>
+      <button class="tier-tab" role="tab" aria-selected="false" data-t="medium" style="--tc:var(--t-med)"><span class="sq" style="background:var(--t-med)">M</span><span><b>Medium</b><small>pose offsets, moderate occlusion</small></span></button>
+      <button class="tier-tab" role="tab" aria-selected="false" data-t="hard" style="--tc:var(--t-hard)"><span class="sq" style="background:var(--t-hard)">H</span><span><b>Hard</b><small>extreme poses, heavy occlusion</small></span></button>
+    </div>
+    <div class="tier-panel reveal">
+      <div class="triplets" id="tierTriplets"></div>
+      <div class="card tier-desc">
+        <h3 id="tierTitle"><span class="sqd t-e"></span>Easy tier</h3>
+        <p id="tierText" style="color:var(--ink-2);font-size:.95rem"></p>
+        <div style="margin-top:14px;font-size:.78rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">How the tiers differ (Table 4)</div>
+        <div class="fp-grid" id="fpGrid"></div>
+        <p class="note">Bars compare the three tiers on each measure; the selected tier is highlighted. &darr; marks a measure where lower means more difficult (less of the person visible).</p>
+      </div>
+    </div>
+    <figure class="card pad reveal fig4" style="margin:20px 0 0">
+      <h3 style="margin:0">Where the difficulty comes from</h3>
+      <img class="paperimg" src="static/img/paper/occlusion_heatmaps.jpg" width="1600" height="672" alt="Normalized spatial occlusion heatmaps for easy, medium and hard tiers" loading="lazy">
+      <div class="row2">
+        <img class="paperimg" src="static/img/paper/luminance.jpg" width="1162" height="694" alt="Mean-luminance distributions per tier" loading="lazy">
+        <img class="paperimg" src="static/img/paper/pose_radar.jpg" width="653" height="687" alt="Pose distribution per tier (radar plot)" loading="lazy" style="max-height:380px;object-fit:contain;justify-self:center">
+      </div>
+      <figcaption class="note" style="margin-top:2px">Paper Fig. 4, per tier: occlusion heatmaps (top), mean-luminance distributions (bottom left) and pose distributions (bottom right). Harder tiers spread occlusion over more of the body, shift lighting toward darker scenes, and cover far more of the pose space. Click a figure to enlarge.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="diversity">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">Coverage</div>
+      <h2>Broader than existing try-on data</h2>
+      <p class="lead">CURVTON-205K is the only dataset in our comparison that is mask-free, in-the-wild, paired, difficulty-tiered and diverse in both garments and people.</p>
+    </div>
+
+    <div class="card pad reveal" id="matrixCard" style="overflow-x:auto">
+      <table class="matrix" id="matrix" aria-label="Comparison of virtual try-on datasets (Table 1)"></table>
+      <p class="note">Diversity coverage: <i>Limited</i> = neither garment nor person-appearance diversity is explicitly targeted, <i>Moderate</i> = one of the two, <i>Broad</i> = both. All listed datasets are public except WildVTON.</p>
+    </div>
+
+    <div class="card chart-card reveal" id="divCard" style="margin-top:20px">
+      <div class="chart-head">
+        <div><h3>Task-free diversity, dimension by dimension</h3><div class="sub">Same feature extractors and protocol for every dataset (Table 4)</div></div>
+        <div class="controls"><div class="seg" id="divDim"></div><button class="tbl-toggle" aria-pressed="false">Table</button></div>
+      </div>
+      <div class="legend"><span><i style="background:var(--neutral)"></i>Existing datasets</span><span><i style="background:var(--accent)"></i>CURVTON-205K (all tiers)</span><span><i style="background:var(--t-med)"></i>CURVTON tiers (E / M / H)</span></div>
+      <div class="chart" id="divChart"></div>
+      <div class="tbl-view"></div>
+      <p class="note" id="divNote"></p>
+    </div>
+
+    <div class="card pad reveal" style="margin-top:20px">
+      <h3>Same task, very different pictures</h3>
+      <p style="color:var(--ink-2);font-size:.93rem;margin-bottom:16px">Representative person images from each dataset (paper Figs. 21&ndash;26). Existing benchmarks are mostly frontal studio shots of Western garments.</p>
+      <div class="strips" id="strips"></div>
+    </div>
+
+    <div class="card pad reveal" style="margin-top:20px">
+      <h3>Who is in the data</h3>
+      <p style="color:var(--ink-2);font-size:.93rem;margin:0 0 6px;max-width:860px">Person prompts sample body shape, geographic and cultural style cues, accessories, visible disabilities and assistive devices, background and photographic style (50% studio, 50% in-the-wild) from a factorized distribution, so the long tail does not collapse. Hover to pause.</p>
+      <div class="marquee" aria-label="Sample source persons (paper Fig. 14)"><div class="track" id="marqueeA"></div><div class="track rev" id="marqueeB"></div></div>
+    </div>
+
+    <div class="card pad reveal" style="margin-top:20px">
+      <div class="tsne-grid">
+        <div class="tsne-stage" id="tsneStage">
+          <img class="on" src="static/img/paper/tsne_category.jpg" width="1200" height="1234" alt="t-SNE of 43,324 garment images coloured by category" loading="lazy">
+          <img src="static/img/paper/tsne_tradition.jpg" width="1200" height="1234" alt="t-SNE of garments coloured by traditional or modern" loading="lazy">
+          <img src="static/img/paper/tsne_faces.jpg" width="1600" height="903" alt="t-SNE of facial-appearance embeddings coloured by cultural group" loading="lazy">
+        </div>
+        <div class="tsne-side">
+          <h3>Embedding-space coverage</h3>
+          <div class="tsne-tabs" style="margin:10px 0 12px"><div class="seg" id="tsneTabs"><button aria-pressed="true" data-v="0">Garment category</button><button aria-pressed="false" data-v="1">Traditional vs modern</button><button aria-pressed="false" data-v="2">Faces</button></div></div>
+          <p id="tsneNote" style="color:var(--ink-2);font-size:.95rem;min-height:5.2em">CLIP t-SNE of the 43,324 garment images: upper-body, lower-body, dress, set and accessory items spread across the map instead of collapsing into a few modes.</p>
+          <div class="facts">
+            <div class="fact"><b>43,324</b><span>garment images in the pool</span></div>
+            <div class="fact"><b>200</b><span>garment types in the dictionary</span></div>
+            <div class="fact"><b>22,755</b><span>traditional garments</span></div>
+            <div class="fact"><b>20,569</b><span>modern garments</span></div>
+          </div>
+          <p class="note">Paper Fig. 6. Projections are visual summaries of coverage, not quantitative metrics.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="results" class="band">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">Results</div>
+      <h2>What training on CURVTON-205K buys you</h2>
+      <p class="lead">We train or fine-tune representative VTON models on CURVTON-205K, then test them in-domain, on standard real benchmarks, and in the wild.</p>
+    </div>
+
+    <div class="card chart-card reveal" id="benchCard">
+      <div class="chart-head">
+        <div><span class="tag">In-domain</span><h3>Zero-shot vs trained on CURVTON-205K</h3><div class="sub">CURVTON-205K test set, by difficulty tier and garment type (Tables 2 &amp; 8)</div></div>
+        <div class="controls"><div class="seg" id="benchModel"></div><div class="seg" id="benchMetric"><button aria-pressed="true" data-v="FID">FID &darr;</button><button aria-pressed="false" data-v="LPIPS">LPIPS &darr;</button><button aria-pressed="false" data-v="SSIM">SSIM &uarr;</button></div><button class="tbl-toggle" aria-pressed="false">Table</button></div>
+      </div>
+      <div class="takeaway" id="benchTake"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg><span></span></div>
+      <div class="bench-grid">
+        <div>
+          <div class="legend"><span><i style="background:var(--neutral)"></i>Zero-shot (pretrained)</span><span><i style="background:var(--accent)"></i>Trained on CURVTON-205K</span></div>
+          <div class="chart" id="benchChart"></div>
+        </div>
+        <div class="bench-side chart">
+          <h4>More uniform across garment types</h4>
+          <div class="sub">Each bar spans the best to worst FID over the five garment subsets. <b id="spreadNote">FID only · OOTDiffusion highlighted</b></div>
+          <div class="legend"><span><i class="line" style="background:var(--neutral)"></i>Zero-shot</span><span><i class="line" style="background:var(--accent)"></i>CURVTON-trained</span></div>
+          <div id="spreadChart"></div>
+        </div>
+      </div>
+      <div class="tbl-view"></div>
+      <p class="note">UB/LB = upper/lower body, G = full-body garments, Tr/NTr = traditional/non-traditional. Hard stays the hardest tier after training, so the tiers remain informative. A shorter range bar means the model is about equally good on traditional, full-body and Western garments.</p>
+    </div>
+
+    <div class="card chart-card reveal" id="crossCard" style="margin-top:20px">
+      <div class="chart-head">
+        <div><span class="tag">Cross-dataset</span><h3>Does it transfer to real benchmarks?</h3><div class="sub">Train on real data, CURVTON-205K, or both; test on fixed real benchmarks (Table 3)</div></div>
+        <div class="controls"><div class="seg" id="crossBench"><button aria-pressed="false" data-v="VITON-HD">VITON-HD</button><button aria-pressed="false" data-v="DressCode">DressCode</button><button aria-pressed="true" data-v="StreetTryOn">StreetTryOn (in-the-wild)</button></div><div class="seg" id="crossMetric"></div><button class="tbl-toggle" aria-pressed="false">Table</button></div>
+      </div>
+      <div class="takeaway" id="crossTake"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg><span></span></div>
+      <div class="legend"><span><i class="dot" style="background:var(--real)"></i>Real baseline</span><span><i class="dot" style="background:var(--accent)"></i>CURVTON-205K only</span><span><i class="dot" style="background:var(--mix)"></i>Real + CURVTON</span></div>
+      <div class="chart" id="crossChart"></div>
+      <div class="tbl-view"></div>
+    </div>
+
+    <div class="card chart-card reveal" id="wildCard" style="margin-top:20px">
+      <div class="chart-head"><div><span class="tag">In-the-wild</span><h3>No ground truth: raters and automatic metrics both favour CURVTON training</h3><div class="sub">OOTDiffusion trained on each data source; pretrained FLUX and IDM-VTON as references (Table 5)</div></div><button class="tbl-toggle" aria-pressed="false">Table</button></div>
+      <div class="chart" id="wildChart"></div>
+      <div class="tbl-view"></div>
+      <p class="note">Human preference: share of blind pairwise votes from 20 annotators using the paper's 10-question rubric, normalized to 100% per criterion. CLIP-I measures garment&ndash;image alignment; VLM is the visual-consistency score from a VLM evaluator.</p>
+    </div>
+
+    <div class="grid-2" style="margin-top:20px">
+      <div class="card chart-card reveal" id="currCard">
+        <div class="chart-head"><div><span class="tag">Curriculum</span><h3>Easy &rarr; hard ordering helps</h3><div class="sub">Stable Diffusion fine-tuning at four budgets (Table 10)</div></div>
+          <div class="controls"><div class="seg" id="currSplit"><button aria-pressed="false" data-v="Easy">Easy</button><button aria-pressed="false" data-v="Medium">Medium</button><button aria-pressed="true" data-v="Hard">Hard</button><button aria-pressed="false" data-v="All Mixed">Mixed</button></div><button class="tbl-toggle" aria-pressed="false">Table</button></div></div>
+        <div class="legend"><span><i class="line" style="background:var(--real)"></i>No curriculum</span><span><i class="line" style="background:var(--mix)"></i>Standard curriculum</span></div>
+        <div class="chart" id="currChart"></div>
+        <div class="tbl-view"></div>
+        <p class="note">FID on the selected test split. Introducing harder tiers gradually is better at every budget, most clearly on the hard split with little compute.</p>
+      </div>
+      <div class="card chart-card reveal" id="compCard">
+        <div class="chart-head"><div><span class="tag">Tier mix</span><h3>Which tiers to train on?</h3><div class="sub">FID by training mix &times; test split (Table 9)</div></div><button class="tbl-toggle" aria-pressed="false">Table</button></div>
+        <div class="chart" id="compChart"></div>
+        <div class="tbl-view"></div>
+        <p class="note"><span id="compNote">Darker = higher FID (worse).</span> Each single tier transfers poorly to the others; using all three tiers at full scale is best on every split.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="gallery">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">Gallery</div>
+      <h2>Browse the sample split</h2>
+      <p class="lead">Hover a card to see the source person; click to open the side-by-side comparison. Garments span 200 types across many cultures.</p>
+    </div>
+    <div class="filters reveal">
+      <div class="seg" id="galTier"><button aria-pressed="true" data-v="all">All tiers</button><button aria-pressed="false" data-v="easy"><span class="sw t-e"></span>Easy</button><button aria-pressed="false" data-v="medium"><span class="sw t-m"></span>Medium</button><button aria-pressed="false" data-v="hard"><span class="sw t-h"></span>Hard</button></div>
+      <div class="seg" id="galGender"><button aria-pressed="true" data-v="all">All</button><button aria-pressed="false" data-v="female">Female</button><button aria-pressed="false" data-v="male">Male</button></div>
+    </div>
+    <div class="gallery" id="gal"></div>
+    <div class="more-wrap"><button class="more-btn" id="galMore" type="button">Show all samples</button></div>
+  </div>
+</section>
+
+<section id="data" class="band">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">Get the data</div>
+      <h2>Download CURVTON-205K</h2>
+      <p class="lead">Hosted on Hugging Face as six tar archives (difficulty &times; presentation), about 108&nbsp;GB in total, plus a small sample split you can browse without downloading everything.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card pad reveal">
+        <h3>Load the sample split</h3>
+        <pre id="code1"><button class="copy" type="button">Copy</button><span class="k">from</span> huggingface_hub <span class="k">import</span> snapshot_download
+
+<span class="c"># sample split only (remove allow_patterns for all)</span>
+path = snapshot_download(
+    repo_id=<span class="s">"curvton2/curvton2"</span>,
+    repo_type=<span class="s">"dataset"</span>,
+    allow_patterns=<span class="s">"sample_dataset/*"</span>,
+)</pre>
+        <div class="files">
+          <div class="file"><span>easy_female.tar</span><span>16.3 GB</span></div>
+          <div class="file"><span>medium_female.tar</span><span>22.4 GB</span></div>
+          <div class="file"><span>hard_female.tar</span><span>19.9 GB</span></div>
+          <div class="file"><span>easy_male.tar</span><span>14.6 GB</span></div>
+          <div class="file"><span>medium_male.tar</span><span>17.4 GB</span></div>
+          <div class="file"><span>hard_male.tar</span><span>17.0 GB</span></div>
+        </div>
+        <p class="note">License: CC BY-NC 4.0 plus the FLUX.2 [klein] 9B non-commercial terms. For research use; not for identity, biometric or surveillance applications.</p>
+      </div>
+      <div class="card pad reveal">
+        <h3>Layout after extraction</h3>
+<pre><span class="k">easy</span>/ <span class="k">medium</span>/ <span class="k">hard</span>/
+└── female/ male/
+    ├── cloth_image/           <span class="c"># in-shop garment  I_c</span>
+    ├── initial_person_image/  <span class="c"># source person    I_p</span>
+    └── tryon_image/           <span class="c"># try-on target    I_t</span>
+
+<span class="c"># matching names pair a triplet (sample split shown)</span>
+initial_person_image/fh_000007_e03.png
+cloth_image/fh_000007_e03_fc_009678_uyghur_atlas_dress.png
+tryon_image/fh_000007_e03_fc_009678_uyghur_atlas_dress.png</pre>
+        <p class="note">Code for the generation pipeline, the tier editing dictionaries, evaluation scripts and diversity metrics: <a href="https://github.com/curvton/CURVTON-205K_CODE" target="_blank" rel="noopener">github.com/curvton/CURVTON-205K_CODE</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="limitations">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">Limitations</div>
+      <h2>What CURVTON-205K is not</h2>
+    </div>
+    <div class="lim">
+      <div class="card reveal"><h3>Synthetic, not real</h3><p>The data may miss real camera characteristics, garment materials, lighting and person&ndash;garment interactions. CURVTON complements in-domain real supervision; it does not replace it (real-only training still wins paired metrics on VITON-HD and DressCode).</p></div>
+      <div class="card reveal"><h3>Occasional attribute drift</h3><p>In a small fraction of cases, fine details such as pockets or buttons are not exactly preserved, more often in the hard tier where reconstruction is inherently ambiguous.</p></div>
+      <div class="card reveal"><h3>Not a demographic census</h3><p>Coverage of styles, appearances and settings is broad but not exhaustive. Our diversity analyses describe visual and embedding coverage, not demographic or cultural fairness.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="cite">
+  <div class="wrap narrow">
+    <div class="sec-head reveal">
+      <div class="kicker">Citation</div>
+      <h2>BibTeX</h2>
+    </div>
+    <pre class="reveal" id="bibtex"><button class="copy" type="button">Copy</button>@misc{bartaula2026curvton205k,
+  title  = {{CURVTON-205K}: A Mask-Free Difficulty-Stratified Synthetic
+            Dataset for Robust and Scalable Virtual Try-On},
+  author = {Bartaula, Dipan and Shrestha, Anuj and Belbase, Ankit and
+            Bishwakarma, Anish and Poudel, Saroj and Ghimire, Samip and
+            Bhatta, Shashank and Arazo, Eric and Bhattarai, Binod},
+  year   = {2026},
+  note   = {arXiv preprint}
+}</pre>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Questions? Write to <a href="mailto:deepanzcreed001@gmail.com">deepanzcreed001@gmail.com</a>. All numbers on this page are taken from the tables in the paper.</p>
+    <p style="margin:0">&copy; 2026 the CURVTON-205K authors</p>
+  </div>
+</footer>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Try-on comparison">
+  <button class="lb-close" type="button" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <button class="lb-nav prev" type="button" aria-label="Previous"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+  <button class="lb-nav next" type="button" aria-label="Next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+  <div class="lb-inner">
+    <div class="cmp" id="lbCmp" role="slider" tabindex="0" aria-label="Compare source person and try-on" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+      <img class="cmp-a" alt="Source person" draggable="false">
+      <div class="cmp-layer"><div class="inner"><img class="cmp-b" alt="Synthesized try-on" draggable="false"></div></div>
+      <div class="cmp-handle"><span class="cmp-knob"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l-6 6 6 6M15 6l6 6-6 6"/></svg></span></div>
+      <span class="cmp-tag l">Source person</span><span class="cmp-tag r">Try-on</span>
+    </div>
+    <div class="lb-side">
+      <img id="lbCloth" alt="Target garment">
+      <div><h3 id="lbName"></h3><div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap" id="lbChips"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="zoom" id="zoom" role="dialog" aria-modal="true" aria-label="Enlarged figure"><img alt=""></div>
+
+<div class="tooltip" id="tip" role="status" aria-live="polite"></div>
+
+<script src="static/vendor/d3.v7.min.js"></script>
+<script src="static/js/data.js"></script>
+<script src="static/js/pipeline.js"></script>
+<script src="static/js/charts.js"></script>
+<script src="static/js/main.js"></script>
+</body>
+</html>
