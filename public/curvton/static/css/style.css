@@ -34,9 +34,8 @@ p{margin:0 0 14px;text-wrap:pretty}
 
 /* ---------- header ---------- */
 header{padding:64px 0 10px;text-align:center}
-h1{font-family:var(--display);margin:0 auto 6px;max-width:980px;letter-spacing:-.02em}
-h1 .name{display:block;font-size:clamp(2.6rem,6.4vw,4.1rem);line-height:1.02;font-weight:800;letter-spacing:-.035em;background:linear-gradient(100deg,#d9480f 0%,#f76707 45%,#e8590c 100%);-webkit-background-clip:text;background-clip:text;color:transparent;padding-bottom:4px}
-h1 .tagline{display:block;font-size:clamp(1.25rem,2.6vw,1.72rem);line-height:1.3;font-weight:650;color:#2b2d31;margin-top:10px;letter-spacing:-.015em}
+h1{font-family:var(--display);font-size:clamp(1.85rem,4.3vw,2.85rem);line-height:1.2;font-weight:800;letter-spacing:-.028em;color:#1d1d1f;margin:0 auto 6px;max-width:1000px}
+h1 .name{white-space:nowrap;background:linear-gradient(100deg,#d9480f 0%,#f76707 50%,#e8590c 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
 .authors{font-size:1.06rem;margin:22px auto 6px;max-width:900px;line-height:1.85;font-weight:500;color:#202124}
 .authors span{display:inline-block;margin:0 10px;white-space:nowrap}
 .authors sup,.affils sup,.notes sup{font-size:.66em;font-weight:600}
@@ -469,3 +468,4 @@ html{scroll-padding-top:16px}
   .tz-lbl b{font-size:.85rem}
   .toc{font-size:.84rem}
 }
+@media (max-width:760px){h1{font-size:1.62rem;line-height:1.22}}
