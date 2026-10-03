@@ -1,9 +1,11 @@
 /* CURVTON-205K project page: UI behaviour */
 (function () {
   const D = window.CV;
-  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.addEventListener("motionok", () => { reduce = false; });
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  if (reduce) $$(".motion-note").forEach(n => n.hidden = false);
   const tierName = { easy: "Easy", medium: "Medium", hard: "Hard" };
   const tierCls = { easy: "t-e", medium: "t-m", hard: "t-h" };
   const easeIO = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
@@ -113,7 +115,7 @@
     playBtn.setAttribute("aria-label", userPaused ? "Resume autoplay" : "Pause autoplay");
   }
   function pauseHero(byUser) { if (byUser) userPaused = true; token++; hc.stop(); stage.classList.add("paused"); paintPlay(); }
-  playBtn.addEventListener("click", () => { if (userPaused) { userPaused = false; stage.classList.remove("paused"); paintPlay(); show(idx + 1); } else pauseHero(true); });
+  playBtn.addEventListener("click", () => { if (userPaused) { if (reduce) { document.documentElement.classList.add("motion-ok"); document.dispatchEvent(new Event("motionok")); } userPaused = false; stage.classList.remove("paused"); paintPlay(); show(idx + 1); } else pauseHero(true); });
   new IntersectionObserver(es => es.forEach(e => {
     const was = heroVisible; heroVisible = e.isIntersecting;
     if (!heroVisible && was) { token++; hc.stop(); stage.classList.add("paused"); }
@@ -153,10 +155,11 @@
       await sleep(6800);
     }
   }
-  if (!reduce) new IntersectionObserver(es => es.forEach(e => {
-    tierOn = e.isIntersecting; tierLoop++;
+  new IntersectionObserver(es => es.forEach(e => {
+    tierOn = e.isIntersecting && !reduce; tierLoop++;
     if (tierOn) tierCycle(tierLoop); else tierCmps.forEach(c => c.stop());
   }), { threshold: 0.35 }).observe(tiersEl);
+  document.addEventListener("motionok", () => { const r = tiersEl.getBoundingClientRect(); if (r.top < innerHeight && r.bottom > 0) { tierOn = true; tierLoop++; tierCycle(tierLoop); } });
   tiersEl.addEventListener("click", e => { const b = e.target.closest(".body"); if (b) openLB(D.samples.indexOf(D.byKey[b.dataset.key]), D.samples); });
   tiersEl.addEventListener("keydown", e => { const b = e.target.closest(".body"); if (b && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); b.click(); } });
 
@@ -284,6 +287,7 @@
   }));
 
   /* ---------- boot ---------- */
+  if (window.Teaser) window.Teaser.init();
   if (window.Arch) window.Arch.init();
   if (window.Loop) window.Loop.init();
   if (window.Charts) window.Charts.init();

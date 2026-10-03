@@ -145,9 +145,10 @@ window.Loop = (function () {
     for (let i = 0; i < N; i++) { const s = document.createElement("div"); s.className = "lp-slot"; s.innerHTML = '<img alt=""><b></b>'; el.hist.appendChild(s); slots.push(s); }
     $("lpPick").innerHTML = EX.map((e, i) => `<button type="button" aria-pressed="${i === 0}"><img src="${src(e.k, "garment")}" alt="" loading="lazy">${e.n}</button>`).join("");
     document.querySelectorAll("#lpPick button").forEach((b, i) => b.addEventListener("click", () => { play(i); }));
-    $("lpPlay").addEventListener("click", () => { paused = !paused; paintBtn(); if (paused) { token++; finalState(); } else play(ex); });
+    $("lpPlay").addEventListener("click", () => { paused = !paused; if (!paused && reduce) { reduce = false; document.documentElement.classList.add("motion-ok"); document.dispatchEvent(new Event("motionok")); } paintBtn(); if (paused) { token++; finalState(); } else play(ex); });
     buildWires();
     if (reduce) paused = true;
+    document.addEventListener("motionok", () => { reduce = false; });
     paintBtn(); finalState();
     new ResizeObserver(() => layoutWires()).observe(el.stage);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(layoutWires);

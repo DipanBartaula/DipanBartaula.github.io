@@ -117,11 +117,12 @@ window.Arch = (function () {
     txt.innerHTML = STAGES.map(s => `<p>${s.p}</p>`).join("");
     steps.querySelectorAll(".step").forEach((b, i) => b.addEventListener("click", () => { manual = true; wrap.classList.add("manual"); paintBtn(); setStage(i, true); }));
     document.getElementById("archPlay").addEventListener("click", () => {
-      if (paused || manual) { paused = false; manual = false; wrap.classList.remove("manual"); start(); setStage((cur + 1) % STAGES.length); }
+      if (paused || manual) { if (reduce) { reduce = false; document.documentElement.classList.add("motion-ok"); document.dispatchEvent(new Event("motionok")); } paused = false; manual = false; wrap.classList.remove("manual"); start(); setStage((cur + 1) % STAGES.length); }
       else { paused = true; clearTimeout(timer); stop(); }
       paintBtn();
     });
     if (reduce) { paused = true; }
+    document.addEventListener("motionok", () => { reduce = false; });
     setStage(0); paintBtn();
     new IntersectionObserver(es => es.forEach(e => {
       visible = e.isIntersecting;

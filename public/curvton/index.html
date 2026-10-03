@@ -52,32 +52,25 @@
     <a class="btn" href="https://huggingface.co/datasets/curvton2/curvton2" target="_blank" rel="noopener"><span class="emoji" aria-hidden="true">🤗</span>Dataset</a>
     <a class="btn disabled" href="#" aria-disabled="true" tabindex="-1"><svg viewBox="0 0 24 24"><path d="M4 4h6l2 3h8v13H4V4zm2 2v12h12V9h-7.1l-2-3H6z"/></svg>arXiv (coming soon)</a>
   </div>
+  <nav class="toc" aria-label="Page sections"><a href="#method">Method</a><a href="#loop-sec">Feedback loop</a><a href="#results">Results</a><a href="#explore">Explore the data</a><a href="#dataset">Dataset</a><a href="#cite">Citation</a></nav>
 </header>
 
 <main class="wrap">
 
-<section class="first" aria-label="Try-on examples">
-  <div class="stage reveal" id="stage">
-    <div class="cmp" id="heroCmp" role="slider" tabindex="0" aria-label="Compare source person and try-on" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
-      <img class="cmp-a" alt="Source person" draggable="false">
-      <div class="cmp-layer"><div class="inner"><img class="cmp-b" alt="Synthesized try-on" draggable="false"></div></div>
-      <div class="cmp-handle"><span class="cmp-knob"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l-6 6 6 6M15 6l6 6-6 6"/></svg></span></div>
-      <span class="cmp-tag l">Source person</span><span class="cmp-tag r">Try-on</span>
-      <span class="cmp-hint">Drag to compare</span>
+<section class="first" id="teaser" aria-label="Teaser">
+  <figure class="tz-fig reveal">
+    <div class="tz" id="tz">
+      <div class="tz-card"><div class="tz-img"><img id="tzP" src="static/img/teaser/fig1_person.jpg" width="683" height="683" alt="Source person"></div><div class="tz-lbl"><b>Source person</b><i>I<sub>p</sub></i></div></div>
+      <div class="tz-op" aria-hidden="true">+</div>
+      <div class="tz-card"><div class="tz-img"><img id="tzG" src="static/img/teaser/fig1_garment.jpg" width="682" height="682" alt="In-shop garment"></div><div class="tz-lbl"><b>In-shop garment</b><i>I<sub>c</sub></i></div></div>
+      <div class="tz-op tz-arrow" aria-hidden="true"><svg viewBox="0 0 64 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h56M48 4l10 8-10 8"/></svg><span>no masks<br>no dense pose</span></div>
+      <div class="tz-card tz-out"><div class="tz-img" id="tzOut"><img id="tzBase" src="static/img/teaser/fig1_person.jpg" width="683" height="683" alt=""><div class="tz-rev" id="tzRev"><div class="tz-inner" id="tzInner"><img id="tzT" src="static/img/teaser/fig1_tryon.jpg" width="683" height="683" alt="Synthesized try-on"></div></div><div class="tz-beam" id="tzBeam"></div><span class="tz-ok" id="tzOk"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7"/></svg>VLM-accepted</span></div><div class="tz-lbl"><b>Synthesized try-on</b><i>I<sub>t</sub></i></div></div>
+      <img class="tz-ghost" id="tzGhost" alt="" aria-hidden="true">
     </div>
-    <div class="side">
-      <div class="garment-card">
-        <div class="gimg" id="heroGarment"></div>
-        <div class="ginfo">
-          <div class="glbl"><span>Target garment</span><span class="chip" id="heroTier"><i class="t-e"></i>Easy</span></div>
-          <div class="gname" id="heroName">&nbsp;</div>
-        </div>
-      </div>
-      <div class="ctrl"><span class="hint" style="margin:0" id="heroCount">1 / 8</span><button class="pill" id="heroPlay" type="button"><svg viewBox="0 0 16 16"><path d="M4 3h3v10H4zM9 3h3v10H9z"/></svg><span>Pause</span></button></div>
-      <div class="rail" id="heroRail" aria-label="Choose an example"></div>
-    </div>
-  </div>
-  <p class="caption reveal"><b>Every CURVTON-205K sample is a mask-free triplet</b>: a source person, an in-shop garment and the synthesized try-on, all at 1024&times;1024, generated without parsing masks or dense pose. Drag the handle to compare; the strip below picks examples from all three difficulty tiers.</p>
+    <div class="tz-ctrl"><div class="tz-dots" id="tzDots" aria-label="Choose a teaser example"></div><span class="tz-name" id="tzName">Paper Fig. 1</span><button class="pill" id="tzPlay" type="button"><svg viewBox="0 0 16 16"><path d="M4 3h3v10H4zM9 3h3v10H9z"/></svg><span>Pause</span></button></div>
+    <p class="hint motion-note" hidden>Animations are paused because your device asks for reduced motion. Press Play on any figure to watch it.</p>
+    <figcaption><b>CURVTON-205K triplets</b>: a source person, an in-shop garment and the synthesized try-on, all at 1024&times;1024 and generated without cloth segmentation masks or dense pose (first example: paper Fig. 1; the others come from all three difficulty tiers).</figcaption>
+  </figure>
   <div class="highlights reveal" id="highlights">
     <div class="hl"><div class="num" data-to="205" data-suffix="K">205K</div><div class="lbl">curated training triplets</div></div>
     <div class="hl"><div class="num" data-to="4.5" data-dec="1" data-suffix="K">4.5K</div><div class="lbl">held-out test triplets, human-verified</div></div>
@@ -94,7 +87,7 @@
   </div>
 </section>
 
-<section>
+<section id="method">
   <h2>Method</h2>
   <p class="sub-h">Garments, people and difficulty edits are generated in separate streams, merged into try-on triplets, and checked by a VLM that sends failures back for regeneration.</p>
   <figure class="arch-wrap reveal" id="archWrap">
@@ -110,7 +103,7 @@
     <figcaption><b>Data generation pipeline</b> (paper Fig. 2). Clothing, person and editing streams produce garments, source persons and difficulty-tiered edits; the merging stream synthesizes the try-on with FLUX.2 [klein] 9B and a Qwen3-VL 32B assessor accepts it or returns an improved prompt for another round (up to 4).</figcaption>
   </figure>
 
-  <h3>The feedback loop, attempt by attempt</h3>
+  <h3 id="loop-sec">The feedback loop, attempt by attempt</h3>
   <p class="h3-sub">Four successive generations per example, taken from the paper (Figs. 13 &amp; 15). The VLM assessor checks every attempt; a rejected try-on goes back to the generator with a refined prompt, and the last attempt is the one it accepts.</p>
   <div class="loop reveal" id="loop">
     <div class="lp-pick" id="lpPick" aria-label="Choose an example"></div>
@@ -150,7 +143,7 @@
   <p class="hint" style="margin-top:10px">Diversity coverage: Limited = neither garment nor person-appearance diversity targeted; Moderate = one; Broad = both. All listed datasets are public except WildVTON.</p>
 </section>
 
-<section>
+<section id="results">
   <h2>Results</h2>
   <p class="sub-h">Training on CURVTON-205K improves models on its own test set, transfers to real benchmarks, and wins in-the-wild comparisons.</p>
   <div class="tabs" role="tablist" id="resTabs">
@@ -191,15 +184,37 @@
   </div>
 </section>
 
-<section>
-  <h2>Gallery</h2>
-  <p class="sub-h">Samples from the public sample split on Hugging Face. <span class="hover-only">Hover to peek, click</span><span class="tap-only">Tap</span> to open the side-by-side comparison.</p>
-  <div class="tabs" role="tablist" id="galTabs">
+<section id="explore">
+  <h2>Explore the data</h2>
+  <p class="sub-h">Compare any source person with its try-on, then browse more try-ons and the garments behind them. All samples come from the public sample split on Hugging Face.</p>
+  <div class="stage reveal" id="stage">
+    <div class="cmp" id="heroCmp" role="slider" tabindex="0" aria-label="Compare source person and try-on" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+      <img class="cmp-a" alt="Source person" draggable="false">
+      <div class="cmp-layer"><div class="inner"><img class="cmp-b" alt="Synthesized try-on" draggable="false"></div></div>
+      <div class="cmp-handle"><span class="cmp-knob"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l-6 6 6 6M15 6l6 6-6 6"/></svg></span></div>
+      <span class="cmp-tag l">Source person</span><span class="cmp-tag r">Try-on</span>
+      <span class="cmp-hint">Drag to compare</span>
+    </div>
+    <div class="side">
+      <div class="garment-card">
+        <div class="gimg" id="heroGarment"></div>
+        <div class="ginfo">
+          <div class="glbl"><span>Target garment</span><span class="chip" id="heroTier"><i class="t-e"></i>Easy</span></div>
+          <div class="gname" id="heroName">&nbsp;</div>
+        </div>
+      </div>
+      <div class="ctrl"><span class="hint" style="margin:0" id="heroCount">1 / 8</span><button class="pill" id="heroPlay" type="button"><svg viewBox="0 0 16 16"><path d="M4 3h3v10H4zM9 3h3v10H9z"/></svg><span>Pause</span></button></div>
+      <div class="rail" id="heroRail" aria-label="Choose an example"></div>
+    </div>
+  </div>
+  <p class="caption reveal" style="text-align:center">Drag the handle (or use &larr;&nbsp;&rarr;) to compare the source person with the synthesized try-on; the strip picks examples from all three difficulty tiers.</p>
+  <div class="tabs" role="tablist" id="galTabs" style="margin-top:40px">
     <button class="tab" role="tab" aria-selected="true" data-g="tryon">Try-on examples</button>
     <button class="tab" role="tab" aria-selected="false" data-g="garments">Garments</button>
   </div>
   <div class="gpanel active" id="g-tryon">
     <div class="toggles" id="galTier"><button aria-pressed="true" data-v="all">All tiers</button><button aria-pressed="false" data-v="easy">Easy</button><button aria-pressed="false" data-v="medium">Medium</button><button aria-pressed="false" data-v="hard">Hard</button></div>
+    <p class="hint"><span class="hover-only">Hover a card to see the source person; click</span><span class="tap-only">Tap a card</span> to open the side-by-side comparison.</p>
     <div class="gallery" id="gal"></div>
     <div class="more"><button class="pill" id="galMore" type="button">Show more</button></div>
   </div>
@@ -207,11 +222,11 @@
     <div class="toggles" id="gmKind"><button aria-pressed="true" data-v="all">All garments</button><button aria-pressed="false" data-v="trad">Traditional</button><button aria-pressed="false" data-v="mod">Contemporary</button></div>
     <div class="garments" id="gms"></div>
     <div class="more"><button class="pill" id="gmMore" type="button">Show more</button></div>
-    <p class="hint" style="margin-top:12px">The garment dictionary covers 200 types, from common Western clothing to long-tail and traditional garments. Each garment here opens the try-on it was used for.</p>
+    <p class="hint" style="margin-top:12px"><span class="hover-only">Hover to peek at the try-on, click</span><span class="tap-only">Tap</span> to compare. The garment dictionary covers 200 types, from common Western clothing to long-tail and traditional garments. Each garment here opens the try-on it was used for.</p>
   </div>
 </section>
 
-<section>
+<section id="dataset">
   <h2>Dataset</h2>
   <p class="sub-h">Released on Hugging Face as six tar archives (difficulty &times; presentation), about 108&nbsp;GB in total, plus a small sample split.</p>
   <div class="dstats reveal">
@@ -313,6 +328,7 @@ path = snapshot_download(
 
 <script src="static/vendor/d3.v7.min.js"></script>
 <script src="static/js/data.js"></script>
+<script src="static/js/teaser.js"></script>
 <script src="static/js/arch.js"></script>
 <script src="static/js/loop.js"></script>
 <script src="static/js/charts.js"></script>
