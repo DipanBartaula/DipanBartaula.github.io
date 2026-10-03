@@ -53,7 +53,7 @@
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden}
-img{max-width:100%;display:block}
+img{max-width:100%;height:auto;display:block}
 a{color:var(--accent-ink);text-decoration:none}
 a:hover{text-decoration:underline;text-underline-offset:3px}
 button{font:inherit;color:inherit}
@@ -548,3 +548,6 @@ p,.note{text-wrap:pretty}
 section.band{background:var(--bg-2);padding-bottom:84px;margin-top:64px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 section.band + section{padding-top:64px}
 @media (max-width:760px){section.band{padding-bottom:56px;margin-top:48px}}
+.fig4 > .paperimg{max-width:900px;width:100%;margin-inline:auto}
+.fig4 .row2 .paperimg{max-height:360px;width:auto;max-width:100%;margin-inline:auto;object-fit:contain}
+.tsne-stage img{height:auto;max-height:560px}
