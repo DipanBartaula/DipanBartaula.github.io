@@ -32,6 +32,7 @@ window.Loop = (function () {
       ret: `M${v.cx},${v.b} V${yb - rr} Q${v.cx},${yb} ${v.cx - rr},${yb} H${g.cx + rr} Q${g.cx},${yb} ${g.cx},${yb - rr} V${g.b}`
     };
     for (const k in d) wires[k].setAttribute("d", d[k]);
+    pkCache.clear();
     wires.lbl.setAttribute("x", (v.cx + g.cx) / 2); wires.lbl.setAttribute("y", yb - 8);
   }
   function buildWires() {
@@ -42,20 +43,22 @@ window.Loop = (function () {
     wires.inP = mk("w", "url(#lpArrow)"); wires.inG = mk("w", "url(#lpArrow)"); wires.gen = mk("w", "url(#lpArrow)");
     wires.chk = mk("w", "url(#lpArrow)"); wires.out = mk("w", "url(#lpArrow)"); wires.ret = mk("ret", "url(#lpArrowR)");
     const t = document.createElementNS(NS, "text"); t.setAttribute("class", "lbl"); t.setAttribute("text-anchor", "middle"); t.textContent = "rejected → refined prompt, regenerate"; el.wires.appendChild(t); wires.lbl = t;
-    const c = document.createElementNS(NS, "circle"); c.setAttribute("r", 6); c.setAttribute("class", "pk"); c.setAttribute("opacity", 0); el.wires.appendChild(c); wires.dot = c;
+    const pk = document.createElement("span"); pk.className = "lp-pk"; el.stage.appendChild(pk); wires.dot = pk;
   }
+  // compositor-only particle: keyframes sampled along the wire, animated on transform/opacity
+  const pkCache = new Map();
   function travel(path, color, ms, my) {
     if (reduce || !wiresVisible()) return sleep(Math.min(ms, 250));
-    const L = path.getTotalLength(), c = wires.dot, t0 = performance.now();
-    c.style.fill = color; c.setAttribute("opacity", 1); path.classList.add("on");
-    return new Promise(res => {
-      (function step(now) {
-        if (my !== token) { c.setAttribute("opacity", 0); path.classList.remove("on"); return res(); }
-        const k = Math.min(1, (now - t0) / ms), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2, p = path.getPointAtLength(L * e);
-        c.setAttribute("cx", p.x); c.setAttribute("cy", p.y);
-        if (k < 1) requestAnimationFrame(step); else { c.setAttribute("opacity", 0); setTimeout(() => path.classList.remove("on"), 250); res(); }
-      })(t0);
-    });
+    const d = path.getAttribute("d"); let frames = pkCache.get(d);
+    if (!frames) {
+      const L = path.getTotalLength(), n = Math.max(6, Math.ceil(L / 14)); frames = [];
+      for (let i = 0; i <= n; i++) { const t = i / n, p = path.getPointAtLength(L * t), o = Math.min(1, t / 0.08, (1 - t) / 0.08); frames.push({ offset: t, transform: `translate3d(${(p.x - 6.5).toFixed(1)}px,${(p.y - 6.5).toFixed(1)}px,0)`, opacity: +Math.max(0, o).toFixed(3) }); }
+      pkCache.set(d, frames);
+    }
+    const dot = wires.dot; dot.style.background = color; path.classList.add("on");
+    const a = dot.animate(frames, { duration: ms, easing: "cubic-bezier(.45,0,.55,1)" });
+    const stopIfStale = setInterval(() => { if (my !== token) { a.cancel(); } }, 120);
+    return a.finished.catch(() => {}).then(() => { clearInterval(stopIfStale); setTimeout(() => path.classList.remove("on"), 200); });
   }
 
   /* ---------- state helpers ---------- */

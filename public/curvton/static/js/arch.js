@@ -1,6 +1,8 @@
-/* Animated overlay on the paper's pipeline figure (Fig. 2). Coordinates are in the figure's pixel space (2000 x 1528). */
+/* Animated overlay on the paper's pipeline figure (Fig. 2). Coordinates are in the figure's pixel space (2000 x 1528).
+   Everything that moves is compositor-only: stage spotlights are pre-drawn layers that crossfade (opacity), and the
+   flow particles are small elements animated with the Web Animations API on transform/opacity along precomputed paths. */
 window.Arch = (function () {
-  const NS = "http://www.w3.org/2000/svg";
+  const NS = "http://www.w3.org/2000/svg", FW = 2000, FH = 1528;
   const STAGES = [
     { t: "Cloth stream", c: "#15803d", box: [80, 56, 1210, 270],
       paths: ["M205,172 H440", "M590,172 H722", "M918,172 H1022", "M1125,245 V338 H1318 V698 H1125 V912 H1245"],
@@ -19,60 +21,73 @@ window.Arch = (function () {
       paths: ["M1600,1097 H1768", "M1835,838 V515", "M1752,463 H1600"],
       p: "<b>Final dataset.</b> Accepted triplets enter the dataset, a share re-rendered from new viewpoints by a camera-angle control model. A ViT-S filter trained on 5K hand-labelled triplets then keeps scores &ge; 0.85: 205K training and 4.5K test triplets." }
   ];
-  const STAGE_MS = 5200, SPEED = 520; // figure px per second
-  let svg, hole, ring, gFlow, gDots, cur = -1, box = null, timer = 0, raf = 0, running = false, visible = false, manual = false, paused = false;
-  let dots = [], reduce = false, last = 0, tweenRaf = 0;
+  const STAGE_MS = 5600, SPEED = 430, DOT = 24; // speed in figure px per second, dot diameter in figure px
+  let arch, layers = [], dotsHost, dotsBox = null, kf = [], cur = -1, timer = 0, visible = false, manual = false, paused = false, reduce = false;
 
   function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
-  function lut(path) {
-    const L = path.getTotalLength(), n = Math.max(2, Math.ceil(L / 8)), a = new Float32Array((n + 1) * 2);
-    for (let i = 0; i <= n; i++) { const p = path.getPointAtLength(L * i / n); a[2 * i] = p.x; a[2 * i + 1] = p.y; }
-    return { L, a, n };
-  }
-  function at(l, t) { const f = t * l.n, i = Math.min(l.n - 1, Math.floor(f)), k = f - i; return [l.a[2 * i] + (l.a[2 * i + 2] - l.a[2 * i]) * k, l.a[2 * i + 1] + (l.a[2 * i + 3] - l.a[2 * i + 1]) * k]; }
 
-  function build() {
-    svg = document.getElementById("archSvg"); if (!svg) return false;
-    const defs = el("defs", {}, svg);
-    const mask = el("mask", { id: "archMask", maskUnits: "userSpaceOnUse", x: 0, y: 0, width: 2000, height: 1528 }, defs);
-    el("rect", { x: 0, y: 0, width: 2000, height: 1528, fill: "#fff" }, mask);
-    hole = el("rect", { rx: 36, fill: "#000" }, mask);
-    el("rect", { class: "veil", x: 0, y: 0, width: 2000, height: 1528, mask: "url(#archMask)" }, svg);
-    ring = el("rect", { class: "ring", rx: 36 }, svg);
-    gFlow = el("g", {}, svg); gDots = el("g", {}, svg);
-    return true;
-  }
-  function setRect(r, b) { r.setAttribute("x", b[0]); r.setAttribute("y", b[1]); r.setAttribute("width", b[2]); r.setAttribute("height", b[3]); }
-  function tweenTo(target) {
-    cancelAnimationFrame(tweenRaf);
-    const from = box || target, t0 = performance.now(), dur = reduce ? 0 : 650;
-    const ease = t => (t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
-    (function step(now) {
-      const k = dur ? Math.min(1, (now - t0) / dur) : 1, e = ease(k);
-      box = from.map((v, i) => v + (target[i] - v) * e);
-      setRect(hole, box); setRect(ring, box);
-      if (k < 1) tweenRaf = requestAnimationFrame(step);
-    })(t0);
+  /* one static, pre-drawn spotlight layer per stage (veil with a rounded hole, outline ring, dashed flow traces) */
+  function buildLayers() {
+    const host = document.createElement("div"); host.className = "arch-layers"; arch.insertBefore(host, document.getElementById("archSvg"));
+    document.getElementById("archSvg").remove();
+    STAGES.forEach((st, i) => {
+      const s = el("svg", { viewBox: `0 0 ${FW} ${FH}`, preserveAspectRatio: "none", class: "arch-layer", "aria-hidden": "true" });
+      const defs = el("defs", {}, s), m = el("mask", { id: "archMask" + i, maskUnits: "userSpaceOnUse", x: 0, y: 0, width: FW, height: FH }, defs);
+      el("rect", { x: 0, y: 0, width: FW, height: FH, fill: "#fff" }, m);
+      const [x, y, w, h] = st.box;
+      el("rect", { x, y, width: w, height: h, rx: 36, fill: "#000" }, m);
+      el("rect", { class: "veil", x: 0, y: 0, width: FW, height: FH, mask: `url(#archMask${i})` }, s);
+      const ring = el("rect", { class: "ring", x, y, width: w, height: h, rx: 36 }, s); ring.style.stroke = st.c;
+      st.paths.forEach(d => { const p = el("path", { d, class: "flow" }, s); p.style.stroke = st.c; });
+      host.appendChild(s); layers.push(s);
+    });
   }
 
-  function setStage(i, fromUser) {
-    cur = i; const st = STAGES[i];
-    ring.style.stroke = st.c;
-    tweenTo(st.box);
-    // flows
-    gFlow.querySelectorAll("path").forEach(p => { p.animate([{ opacity: 0.28 }, { opacity: 0 }], { duration: 250, fill: "forwards" }).onfinish = () => p.remove(); });
-    gDots.innerHTML = ""; dots = [];
-    st.paths.forEach((d, j) => {
-      const p = el("path", { d, class: "flow", stroke: st.c }, gFlow);
-      p.style.stroke = st.c; p.style.opacity = 0;
-      p.animate([{ opacity: 0 }, { opacity: 0.28 }], { duration: 450, delay: 250, fill: "forwards" });
-      const l = lut(p);
-      if (!reduce) for (let k = 0; k < 2; k++) {
-        const c = el("circle", { r: 13, class: "dot" }, gDots); c.style.fill = st.c; c.setAttribute("opacity", 0);
-        dots.push({ c, l, t: (k / 2 + j * 0.17) % 1 });
+  /* precompute constant-speed keyframes (transform + opacity) for every path */
+  function buildKeyframes() {
+    const probe = el("svg", { width: 0, height: 0, style: "position:absolute;width:0;height:0;overflow:hidden" });
+    document.body.appendChild(probe);
+    kf = STAGES.map(st => st.paths.map(d => {
+      const p = el("path", { d }, probe), L = p.getTotalLength(), n = Math.max(8, Math.ceil(L / 18)), frames = [];
+      for (let i = 0; i <= n; i++) {
+        const t = i / n, pt = p.getPointAtLength(L * t), o = Math.max(0, Math.min(1, t / 0.07, (1 - t) / 0.07));
+        frames.push({ offset: t, transform: `translate3d(${(pt.x - DOT / 2).toFixed(1)}px,${(pt.y - DOT / 2).toFixed(1)}px,0)`, opacity: +o.toFixed(3) });
+      }
+      return { frames, dur: L / SPEED * 1000 };
+    }));
+    probe.remove();
+  }
+
+  function fitDots() { if (!dotsHost) return; const k = arch.clientWidth / FW; dotsHost.style.transform = `scale(${k})`; }
+
+  function swapDots(i) {
+    const old = dotsBox;
+    if (old) {
+      old.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 260, easing: "ease", fill: "forwards" }).finished.then(() => old.remove()).catch(() => old.remove());
+    }
+    dotsBox = null;
+    if (reduce) return;
+    const box = document.createElement("div"); box.className = "arch-dotset"; box.style.opacity = 0;
+    const st = STAGES[i];
+    kf[i].forEach((k, j) => {
+      for (let n = 0; n < 2; n++) {
+        const d = document.createElement("span"); d.className = "arch-dot"; d.style.background = st.c;
+        box.appendChild(d);
+        const a = d.animate(k.frames, { duration: k.dur, iterations: Infinity, easing: "linear" });
+        a.currentTime = k.dur * ((n / 2 + j * 0.17) % 1);
+        if (!visible || paused) a.pause();
       }
     });
-    // ui
+    dotsHost.appendChild(box); dotsBox = box;
+    box.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 420, delay: 180, easing: "ease", fill: "forwards" });
+  }
+  function playDots(on) { if (!dotsBox) return; dotsBox.querySelectorAll(".arch-dot").forEach(d => d.getAnimations().forEach(a => on ? a.play() : a.pause())); }
+
+  function setStage(i, fromUser) {
+    if (i === cur && !fromUser) { schedule(); return; }
+    cur = i; const st = STAGES[i];
+    layers.forEach((l, j) => l.classList.toggle("on", j === i));
+    swapDots(i);
     const tag = document.getElementById("archTag");
     tag.querySelector(".n").textContent = i + 1; tag.querySelector(".n").style.background = st.c; tag.querySelector("span:last-child").textContent = st.t;
     document.querySelectorAll("#archSteps .step").forEach((b, j) => {
@@ -82,24 +97,9 @@ window.Arch = (function () {
     const txt = document.getElementById("archText");
     txt.setAttribute("aria-live", fromUser ? "polite" : "off");
     txt.querySelectorAll("p").forEach((p, j) => p.classList.toggle("on", j === i));
-    clearTimeout(timer);
-    if (!manual && !paused && visible && !reduce) timer = setTimeout(() => setStage((cur + 1) % STAGES.length), STAGE_MS);
+    schedule();
   }
-
-  function frame(ts) {
-    if (!running) return;
-    const dt = Math.min(50, ts - (last || ts)); last = ts;
-    for (const d of dots) {
-      d.t += (SPEED * dt / 1000) / d.l.L; if (d.t >= 1) d.t -= 1;
-      const [x, y] = at(d.l, d.t);
-      d.c.setAttribute("cx", x.toFixed(1)); d.c.setAttribute("cy", y.toFixed(1));
-      const fade = Math.min(1, d.t * 8, (1 - d.t) * 8);
-      d.c.setAttribute("opacity", fade.toFixed(2));
-    }
-    raf = requestAnimationFrame(frame);
-  }
-  function start() { if (running || reduce) return; running = true; last = 0; raf = requestAnimationFrame(frame); }
-  function stop() { running = false; cancelAnimationFrame(raf); }
+  function schedule() { clearTimeout(timer); if (!manual && !paused && visible && !reduce) timer = setTimeout(() => setStage((cur + 1) % STAGES.length), STAGE_MS); }
 
   function paintBtn() {
     const b = document.getElementById("archPlay"), p = paused || manual;
@@ -109,27 +109,33 @@ window.Arch = (function () {
   }
 
   function init() {
+    arch = document.getElementById("arch"); if (!arch || !document.getElementById("archSvg")) return;
     reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!build()) return;
     const wrap = document.getElementById("archWrap"), steps = document.getElementById("archSteps"), txt = document.getElementById("archText");
+    buildLayers(); buildKeyframes();
+    const dw = document.createElement("div"); dw.className = "arch-dots-wrap"; dotsHost = document.createElement("div"); dotsHost.className = "arch-dots";
+    dw.appendChild(dotsHost); arch.insertBefore(dw, document.getElementById("archTag"));
+    fitDots(); new ResizeObserver(fitDots).observe(arch);
     steps.style.setProperty("--dur", STAGE_MS + "ms");
     steps.innerHTML = STAGES.map((s, i) => `<button class="step" type="button" role="tab" style="--sc:${s.c}"><div class="k">Stage ${i + 1}</div><div class="t">${s.t}</div></button>`).join("");
     txt.innerHTML = STAGES.map(s => `<p>${s.p}</p>`).join("");
     steps.querySelectorAll(".step").forEach((b, i) => b.addEventListener("click", () => { manual = true; wrap.classList.add("manual"); paintBtn(); setStage(i, true); }));
     document.getElementById("archPlay").addEventListener("click", () => {
-      if (paused || manual) { if (reduce) { reduce = false; document.documentElement.classList.add("motion-ok"); document.dispatchEvent(new Event("motionok")); } paused = false; manual = false; wrap.classList.remove("manual"); start(); setStage((cur + 1) % STAGES.length); }
-      else { paused = true; clearTimeout(timer); stop(); }
+      if (paused || manual) {
+        if (reduce) { reduce = false; document.documentElement.classList.add("motion-ok"); document.dispatchEvent(new Event("motionok")); swapDots(cur); }
+        paused = false; manual = false; wrap.classList.remove("manual"); playDots(true); setStage((cur + 1) % STAGES.length);
+      } else { paused = true; clearTimeout(timer); playDots(false); }
       paintBtn();
     });
-    if (reduce) { paused = true; }
-    document.addEventListener("motionok", () => { reduce = false; });
+    document.addEventListener("motionok", () => { if (reduce) { reduce = false; if (cur >= 0) swapDots(cur); } });
+    if (reduce) paused = true;
     setStage(0); paintBtn();
     new IntersectionObserver(es => es.forEach(e => {
       visible = e.isIntersecting;
-      if (visible) { if (!paused) start(); if (!manual && !paused) setStage(cur); }
-      else { stop(); clearTimeout(timer); }
-    }), { threshold: 0.3 }).observe(document.getElementById("arch"));
-    document.addEventListener("visibilitychange", () => { if (document.hidden) stop(); else if (visible && !paused) start(); });
+      playDots(visible && !paused);
+      if (visible) schedule(); else clearTimeout(timer);
+    }), { threshold: 0.25 }).observe(arch);
+    document.addEventListener("visibilitychange", () => { if (document.hidden) { playDots(false); clearTimeout(timer); } else if (visible) { playDots(!paused); schedule(); } });
   }
   return { init };
 })();
