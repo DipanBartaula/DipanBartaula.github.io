@@ -192,6 +192,36 @@
   filterGal(false);
   gal.addEventListener("click", e => { const c = e.target.closest(".gcard"); if (!c) return; const vis = $$(".gcard:not(.hide)", gal); openLB(vis.indexOf(c), vis.map(v => order[+v.dataset.i])); });
 
+  /* ---------- gallery tabs ---------- */
+  $$("#galTabs .tab").forEach(b => b.addEventListener("click", () => {
+    $$("#galTabs .tab").forEach(x => x.setAttribute("aria-selected", x === b ? "true" : "false"));
+    $$(".gpanel").forEach(p => p.classList.toggle("active", p.id === "g-" + b.dataset.g));
+  }));
+
+  /* ---------- garment wall: every garment opens the try-on it was used for ---------- */
+  const MODERN = new Set(["Lace dress", "Mom jeans", "Ruffle top", "Blazer", "Sweatshirt", "Fair Isle sweater", "Little black dress", "Cape coat", "Tuxedo", "Jeans", "Tracksuit", "Bomber jacket", "Jumpsuit"]);
+  const gmOrder = order.slice();
+  const gms = $("#gms"), gmMore = $("#gmMore"), GPAGE = 18;
+  gms.innerHTML = gmOrder.map((s, i) => `<button class="gm" type="button" data-i="${i}" data-kind="${MODERN.has(s.garment) ? "mod" : "trad"}" aria-label="${s.garment}: open the try-on">
+      <img src="${s.clothSm}" alt="${s.garment}" loading="lazy"><span class="peek"><img src="${s.tryonSm}" alt="" loading="lazy"></span>
+      <span class="cap"><span>${s.garment}</span><i class="${tierCls[s.tier]}" title="${tierName[s.tier]} tier"></i></span></button>`).join("");
+  let gmKind = "all", gmAll = false;
+  function filterGm(animate) {
+    let n = 0, total = 0;
+    $$(".gm", gms).forEach(c => {
+      const match = gmKind === "all" || c.dataset.kind === gmKind; if (match) total++;
+      const ok = match && (gmAll || total <= GPAGE), was = c.classList.contains("hide");
+      c.classList.toggle("hide", !ok);
+      if (ok && animate && (was || !gmAll)) { c.classList.remove("enter"); void c.offsetWidth; c.style.animationDelay = Math.min(n++, 12) * 30 + "ms"; c.classList.add("enter"); }
+    });
+    gmMore.parentElement.style.display = total > GPAGE && !gmAll ? "" : "none";
+    gmMore.textContent = `Show all ${total} garments`;
+  }
+  $("#gmKind").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; $$("#gmKind button").forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false")); gmKind = b.dataset.v; filterGm(true); });
+  gmMore.addEventListener("click", () => { gmAll = true; filterGm(true); });
+  filterGm(false);
+  gms.addEventListener("click", e => { const c = e.target.closest(".gm"); if (!c) return; const vis = $$(".gm:not(.hide)", gms); openLB(vis.indexOf(c), vis.map(v => gmOrder[+v.dataset.i])); });
+
   /* ---------- lightbox ---------- */
   const lb = $("#lightbox"); let lbList = [], lbIdx = 0, lbReturn = null;
   const lc = Compare($("#lbCmp"));
@@ -255,5 +285,6 @@
 
   /* ---------- boot ---------- */
   if (window.Arch) window.Arch.init();
+  if (window.Loop) window.Loop.init();
   if (window.Charts) window.Charts.init();
 })();

@@ -19,12 +19,13 @@
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231d1d1f'/%3E%3Cpath d='M22 14l-10 8 5 8 5-3v23h20V27l5 3 5-8-10-8c-2 4-6 6-10 6s-8-2-10-6z' fill='%23e8590c'/%3E%3C/svg%3E">
 <link rel="preload" href="static/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="static/fonts/jakarta-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="static/css/style.css">
 </head>
 <body>
 
 <header class="wrap">
-  <h1><span class="name">CURVTON-205K</span>: A Mask-Free Difficulty-Stratified Synthetic Dataset for Robust and Scalable Virtual Try-On</h1>
+  <h1><span class="name">CURVTON-205K</span><span class="tagline">A Mask-Free Difficulty-Stratified Synthetic Dataset for Robust and Scalable Virtual Try-On</span></h1>
   <div class="authors">
     <span>Dipan Bartaula<sup>1,6,&dagger;</sup></span>
     <span>Anuj Shrestha<sup>1</sup></span>
@@ -109,7 +110,24 @@
     <figcaption><b>Data generation pipeline</b> (paper Fig. 2). Clothing, person and editing streams produce garments, source persons and difficulty-tiered edits; the merging stream synthesizes the try-on with FLUX.2 [klein] 9B and a Qwen3-VL 32B assessor accepts it or returns an improved prompt for another round (up to 4).</figcaption>
   </figure>
 
-  <h3>Closed-loop refinement removes most artifacts</h3>
+  <h3>The feedback loop, attempt by attempt</h3>
+  <p class="h3-sub">Four successive generations per example, taken from the paper (Figs. 13 &amp; 15). The VLM assessor checks every attempt; a rejected try-on goes back to the generator with a refined prompt, and the last attempt is the one it accepts.</p>
+  <div class="loop reveal" id="loop">
+    <div class="lp-pick" id="lpPick" aria-label="Choose an example"></div>
+    <div class="lp-stage" id="lpStage">
+      <svg class="lp-wires" id="lpWires" aria-hidden="true"></svg>
+      <div class="lp-col inputs"><div class="lp-img"><img id="lpPerson" alt="Source person"><span>Person</span></div><div class="lp-img"><img id="lpGarment" alt="Target garment"><span>Garment</span></div></div>
+      <div class="lp-node" id="lpGen"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8L19 13M15 9h.01M17.8 6.2L19 5M3 21l9-9M12.2 6.2L11 5"/></svg></div><b>FLUX.2 [klein] 9B</b><small>try-on generator</small><span class="lp-prompt" id="lpPrompt">Base VTON prompt</span></div>
+      <div class="lp-out" id="lpOut"><img id="lpImgA" alt="Generated try-on attempt"><img id="lpImgB" class="hide" alt=""><span class="att" id="lpAtt">Attempt 1</span><span class="ph">Waiting for the generator&hellip;</span><div class="scan" id="lpScan"></div><span class="stamp" id="lpStamp"></span></div>
+      <div class="lp-node" id="lpVlm"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></div><b>Qwen3-VL 32B</b><small>VLM assessor</small>
+        <ul class="lp-checks" id="lpChecks"><li><i></i>Garment faithfulness</li><li><i></i>Placement plausibility</li><li><i></i>Semantic consistency</li><li><i></i>No visible artifacts</li></ul>
+        <div class="lp-verdict" id="lpVerdict" aria-live="off"></div></div>
+      <div class="lp-hist" id="lpHist"><div class="hd">Attempts</div></div>
+    </div>
+    <div class="lp-foot"><p class="hint" id="lpNote">Pick an example above; each one plays through its attempts.</p><button class="pill" id="lpPlay" type="button"><svg viewBox="0 0 16 16"><path d="M4 3h3v10H4zM9 3h3v10H9z"/></svg><span>Pause</span></button></div>
+  </div>
+
+  <h3>Across the dataset, the loop removes most artifacts</h3>
   <div class="two reveal">
     <div class="chart-box" id="refineBox">
       <h4>Artifact rate per refinement round</h4>
@@ -121,7 +139,7 @@
   </div>
 
   <h3>Three difficulty tiers</h3>
-  <p style="color:var(--fg-2);margin:0 0 16px">Each source person is edited with tier-specific instructions that raise pose deviation, occlusion, clutter and viewpoint change, giving 100K edited people per tier. The tiers show <i>where</i> a model breaks, not just its average score.</p>
+  <p class="h3-sub">Each source person is edited with tier-specific instructions that raise pose deviation, occlusion, clutter and viewpoint change, giving 100K edited people per tier. The tiers show <i>where</i> a model breaks, not just its average score.</p>
   <div class="tiers reveal" id="tiers"></div>
 </section>
 
@@ -174,11 +192,23 @@
 </section>
 
 <section>
-  <h2>More examples</h2>
-  <p class="sub-h"><span class="hover-only">Hover a card to see the source person; click</span><span class="tap-only">Tap a card</span> to compare. Samples from the public sample split on Hugging Face.</p>
-  <div class="toggles" id="galTier"><button aria-pressed="true" data-v="all">All tiers</button><button aria-pressed="false" data-v="easy">Easy</button><button aria-pressed="false" data-v="medium">Medium</button><button aria-pressed="false" data-v="hard">Hard</button></div>
-  <div class="gallery" id="gal"></div>
-  <div class="more"><button class="pill" id="galMore" type="button">Show more</button></div>
+  <h2>Gallery</h2>
+  <p class="sub-h">Samples from the public sample split on Hugging Face. <span class="hover-only">Hover to peek, click</span><span class="tap-only">Tap</span> to open the side-by-side comparison.</p>
+  <div class="tabs" role="tablist" id="galTabs">
+    <button class="tab" role="tab" aria-selected="true" data-g="tryon">Try-on examples</button>
+    <button class="tab" role="tab" aria-selected="false" data-g="garments">Garments</button>
+  </div>
+  <div class="gpanel active" id="g-tryon">
+    <div class="toggles" id="galTier"><button aria-pressed="true" data-v="all">All tiers</button><button aria-pressed="false" data-v="easy">Easy</button><button aria-pressed="false" data-v="medium">Medium</button><button aria-pressed="false" data-v="hard">Hard</button></div>
+    <div class="gallery" id="gal"></div>
+    <div class="more"><button class="pill" id="galMore" type="button">Show more</button></div>
+  </div>
+  <div class="gpanel" id="g-garments">
+    <div class="toggles" id="gmKind"><button aria-pressed="true" data-v="all">All garments</button><button aria-pressed="false" data-v="trad">Traditional</button><button aria-pressed="false" data-v="mod">Contemporary</button></div>
+    <div class="garments" id="gms"></div>
+    <div class="more"><button class="pill" id="gmMore" type="button">Show more</button></div>
+    <p class="hint" style="margin-top:12px">The garment dictionary covers 200 types, from common Western clothing to long-tail and traditional garments. Each garment here opens the try-on it was used for.</p>
+  </div>
 </section>
 
 <section>
@@ -284,6 +314,7 @@ path = snapshot_download(
 <script src="static/vendor/d3.v7.min.js"></script>
 <script src="static/js/data.js"></script>
 <script src="static/js/arch.js"></script>
+<script src="static/js/loop.js"></script>
 <script src="static/js/charts.js"></script>
 <script src="static/js/main.js"></script>
 </body>
