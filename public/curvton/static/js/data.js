@@ -43,7 +43,7 @@ window.CV = (function () {
     { gen: "FLUX.2-klein-9B", cost: "$25k", ev: "Qwen3-VL-30B-A3B Thinking", it0: [44, 54, 66], it4: [9, 12, 13] },
     { gen: "FLUX.2-klein-9B", cost: "$25k", ev: "PaliGemma", it0: [44, 54, 66], it4: [13, 16, 20] },
     { gen: "FLUX.2-klein-4B", cost: "$18k", ev: "Qwen3-VL 32B", it0: [55, 63, 74], it4: [15, 18, 22] },
-    { gen: "FLUX.2-klein-4B", cost: "$18k", ev: "PaliGemma", it0: [55, 63, 74], it4: [18, 22, 27] },
+    { gen: "FLUX.2-klein-4B", cost: "$18k", ev: "PaliGemma", it0: [55, 63, 74], it4: [18, 22, 27], optional: true },
     { gen: "Qwen-Image-Edit-2509", cost: "$90k", ev: "Qwen3-VL 32B", it0: [65, 73, 82], it4: [21, 25, 30] },
     { gen: "Qwen-Image-Edit-2509", cost: "$90k", ev: "PaliGemma", it0: [65, 73, 82], it4: [28, 33, 38] },
     { gen: "Nano Banana Pro", cost: "$160k", ev: "Qwen3-VL 32B", it0: [40, 48, 60], it4: [5, 8, 10] }

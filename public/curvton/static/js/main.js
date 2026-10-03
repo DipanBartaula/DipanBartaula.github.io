@@ -147,11 +147,11 @@
     railBtns.forEach((b, j) => { b.classList.toggle("active", j === i); const bar = $(".bar i", b); bar.style.animation = "none"; void bar.offsetWidth; bar.style.animation = ""; });
     setGarment(s);
     const autoplay = !userPaused && heroVisible && !reduce;
-    hc.set(autoplay ? 1 : 0.5);
+    hc.set(autoplay ? 0.965 : 0.5);
     if (prev) { requestAnimationFrame(() => snap.classList.remove("on")); setTimeout(() => snap.remove(), 650); }
     if (!autoplay) return;
     await sleep(500); if (my !== token) return;
-    await hc.to(0, 1700); if (my !== token) return;
+    await hc.to(0.035, 1700); if (my !== token) return;
     await sleep(1000); if (my !== token) return;
     await hc.to(0.5, 900); if (my !== token) return;
     await sleep(HERO_DUR - 500 - 1700 - 1000 - 900); if (my !== token) return;
@@ -176,11 +176,11 @@
   new IntersectionObserver(es => es.forEach(e => {
     const was = heroVisible; heroVisible = e.isIntersecting;
     if (!heroVisible && was) { token++; hc.stop(); stage.classList.add("paused"); }
-    else if (heroVisible && !was && !userPaused) { stage.classList.remove("paused"); show(idx + 1); }
+    else if (heroVisible && !was && !userPaused) { stage.classList.remove("paused"); show(idx); }
   }), { threshold: 0.35 }).observe(heroCmp);
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) { token++; hc.stop(); stage.classList.add("paused"); }
-    else if (heroVisible && !userPaused) { stage.classList.remove("paused"); show(idx + 1); }
+    else if (heroVisible && !userPaused) { stage.classList.remove("paused"); show(idx); }
   });
   if (reduce) stage.classList.add("paused");
   paintPlay();
@@ -190,7 +190,7 @@
   const tierPicks = {
     easy: ["easy_female_flamenco_dress", "easy_male_hakama"],
     medium: ["medium_female_muga_silk_saree", "medium_male_yukata"],
-    hard: ["hard_female_tehuana_dress", "hard_male_thobe"]
+    hard: ["hard_female_limbu_mekhli", "hard_male_thobe"]
   };
   const tierText = {
     easy: "Near-frontal poses against studio or minimal backgrounds, with little occlusion. This is the baseline every model should get right.",
@@ -207,7 +207,7 @@
       const s = D.byKey[k];
       return `<figure class="trip enter" style="animation-delay:${i * 90}ms" data-key="${k}" tabindex="0" role="button" aria-label="Open ${s.garment} comparison">
         <div class="cell"><img src="${s.personSm}" alt="Source person" loading="lazy"><span>Person</span></div><div class="cell"><img src="${s.clothSm}" alt="${s.garment}" loading="lazy"><span>Garment</span></div><div class="cell"><img src="${s.tryonSm}" alt="Try-on" loading="lazy"><span>Try-on</span></div>
-        <figcaption><b>${s.garment}</b><span>${s.gender} · click to compare</span></figcaption></figure>`;
+        <figcaption><b>${s.garment}</b><span>${s.gender} · <span class="hover-only">click</span><span class="tap-only">tap</span> to compare</span></figcaption></figure>`;
     }).join("");
     if (chartsApi) chartsApi.setTier(t);
   }
@@ -227,16 +227,16 @@
   const covName = ["", "Limited", "Moderate", "Broad"];
   let k = 0;
   const mark = v => { const h = (v ? yes : no).replace('class="mk', `style="transition-delay:${(k++) * 35}ms" class="mk`); return h; };
-  $("#matrix").innerHTML = `<thead><tr><th>Dataset</th><th class="mx-hide">Train</th><th class="mx-hide">Test</th><th class="mx-hide">Type</th><th>Mask-free</th><th>Diff. tiers</th><th>In-the-wild</th><th>Cloth pairs</th><th>Diversity</th></tr></thead><tbody>` +
-    D.datasets.map(d => `<tr class="${d.ours ? "ours" : ""}"><td>${d.name}<span class="mx-meta">${d.train} / ${d.test} · ${d.type}</span></td><td class="mx-hide">${d.train}</td><td class="mx-hide">${d.test}</td><td class="mx-hide">${d.type}</td><td>${mark(d.mask)}</td><td>${mark(d.tiers)}</td><td>${mark(d.wild)}</td><td>${mark(d.pairs)}</td>
-      <td><span class="cov"><span class="bars">${[1, 2, 3].map(i => `<i class="${i <= d.cov ? "on" : ""}"></i>`).join("")}</span><span class="lbl">${covName[d.cov]}</span></span></td></tr>`).join("") + "</tbody>";
+  $("#matrix").innerHTML = `<thead><tr><th>Dataset</th><th class="mx-hide">Train</th><th class="mx-hide">Test</th><th class="mx-hide">Type</th><th>Mask-free</th><th>Diff. tiers</th><th>In-the-wild</th><th>Cloth pairs</th><th class="mx-hide">Diversity</th></tr></thead><tbody>` +
+    D.datasets.map(d => `<tr class="${d.ours ? "ours" : ""}"><td>${d.name}<span class="mx-meta">${d.train} / ${d.test} · ${d.type} · ${covName[d.cov]} diversity</span></td><td class="mx-hide">${d.train}</td><td class="mx-hide">${d.test}</td><td class="mx-hide">${d.type}</td><td>${mark(d.mask)}</td><td>${mark(d.tiers)}</td><td>${mark(d.wild)}</td><td>${mark(d.pairs)}</td>
+      <td class="mx-hide"><span class="cov"><span class="bars">${[1, 2, 3].map(i => `<i class="${i <= d.cov ? "on" : ""}"></i>`).join("")}</span><span class="lbl">${covName[d.cov]}</span></span></td></tr>`).join("") + "</tbody>";
 
   /* ---------- dataset strips ---------- */
   const strips = [
     { n: "VITON-HD", d: "studio · frontal · upper body", imgs: [0, 1, 2, 3, 4].map(i => `static/img/compare/vitonhd_${i}.jpg`) },
     { n: "DressCode", d: "studio · frontal · catalogue", imgs: ["ub_0", "lb_1", "dress_0", "ub_3", "dress_2"].map(i => `static/img/compare/dresscode_${i}.jpg`) },
     { n: "StreetTryOn", d: "in-the-wild · Western upper body", imgs: [0, 1, 2, 3, 4].map(i => `static/img/compare/streettryon_${i}.jpg`) },
-    { n: "CURVTON-205K", d: "studio + in-the-wild · 200 garment types · 3 tiers", ours: true, imgs: ["hard_female_tehuana_dress", "medium_male_tuxedo", "hard_male_pashtun_dress", "medium_female_muga_silk_saree", "easy_male_barong_tagalog"].map(k => D.byKey[k].tryonSm) }
+    { n: "CURVTON-205K", d: "studio + in-the-wild · 200 garment types · 3 tiers", ours: true, imgs: ["hard_female_kitenge_dress", "medium_male_balochi_suit", "hard_male_pashtun_dress", "medium_female_muga_silk_saree", "easy_male_barong_tagalog"].map(k => D.byKey[k].tryonSm) }
   ];
   $("#strips").innerHTML = strips.map(s => `<div class="strip${s.ours ? " ours" : ""}"><div class="name">${s.n}<small>${s.d}</small></div><div class="imgs">${s.imgs.map(src => `<img src="${src}" alt="${s.n} sample" loading="lazy">`).join("")}</div></div>`).join("");
 
@@ -328,14 +328,43 @@
   });
 
   /* ---------- figure zoom ---------- */
-  const zoom = $("#zoom");
-  document.addEventListener("click", e => {
+  const zoom = $("#zoom"), zImg = $("img", zoom), zCap = $("figcaption", zoom), zClose = $(".zclose", zoom);
+  let zReturn = null;
+  function closeZoom() { zoom.classList.remove("open"); document.body.style.overflow = ""; if (zReturn) zReturn.focus(); }
+  document.addEventListener("click", async e => {
     const im = e.target.closest(".paperimg"); if (!im) return;
-    $("img", zoom).src = im.currentSrc || im.src; $("img", zoom).alt = im.alt; zoom.classList.add("open"); document.body.style.overflow = "hidden";
+    zReturn = im;
+    const src = im.currentSrc || im.src, pre = new Image(); pre.src = src;
+    try { await pre.decode(); } catch (err) {}
+    zImg.src = src; zImg.alt = im.alt; zCap.textContent = im.alt;
+    zoom.classList.add("open"); document.body.style.overflow = "hidden"; zClose.focus();
   });
-  zoom.addEventListener("click", () => { zoom.classList.remove("open"); document.body.style.overflow = ""; });
-  document.addEventListener("keydown", e => { if (e.key === "Escape" && zoom.classList.contains("open")) { zoom.classList.remove("open"); document.body.style.overflow = ""; } });
+  zoom.addEventListener("click", e => { if (e.target === zoom || e.target.closest(".zclose") || e.target === zImg) closeZoom(); });
+  document.addEventListener("keydown", e => {
+    if (!zoom.classList.contains("open")) return;
+    if (e.key === "Escape") closeZoom();
+    else if (e.key === "Tab") { e.preventDefault(); zClose.focus(); }
+  });
   $$(".paperimg").forEach(im => { im.tabIndex = 0; im.setAttribute("role", "button"); im.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); im.click(); } }); });
+
+  /* ---------- scrollable segmented controls: fade only when they overflow, keep the pressed one visible ---------- */
+  function centerSeg(sg, smooth) {
+    const b = sg.querySelector('button[aria-pressed="true"]'); if (!b || sg.scrollWidth <= sg.clientWidth + 1) return;
+    sg.scrollTo({ left: b.offsetLeft - (sg.clientWidth - b.offsetWidth) / 2, behavior: smooth && !reduce ? "smooth" : "auto" });
+  }
+  function segState(sg) {
+    const ovf = sg.scrollWidth > sg.clientWidth + 1;
+    sg.classList.toggle("ovf", ovf);
+    sg.classList.toggle("scrolled", ovf && sg.scrollLeft > 2);
+    sg.classList.toggle("at-end", ovf && sg.scrollLeft + sg.clientWidth >= sg.scrollWidth - 2);
+  }
+  const segRO = new ResizeObserver(es => es.forEach(e => { segState(e.target); centerSeg(e.target, false); }));
+  function watchSegs() { $$(".seg").forEach(sg => { if (sg.dataset.w) return; sg.dataset.w = 1; segRO.observe(sg); sg.addEventListener("scroll", () => segState(sg), { passive: true }); }); }
+  watchSegs(); setTimeout(watchSegs, 1500);
+  document.addEventListener("click", e => {
+    const b = e.target.closest(".seg button"); if (!b) return;
+    const sg = b.parentElement; requestAnimationFrame(() => { centerSeg(sg, true); segState(sg); });
+  });
 
   /* ---------- copy buttons ---------- */
   $$("pre .copy").forEach(b => b.addEventListener("click", async () => {

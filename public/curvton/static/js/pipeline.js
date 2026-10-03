@@ -44,17 +44,51 @@ window.Pipeline = (function () {
   ];
   const edgeById = {}; edges.forEach(e => edgeById[e.id] = e);
 
+  /* narrow-screen layout: streams stacked as 2-column snakes, then merge, loop and screening */
+  const TALL = {
+    vb: "0 0 360 1206",
+    nodes: {
+      gdict: [12, 14], gllm: [192, 14], gout: [12, 126], ggen: [192, 126],
+      pdict: [12, 256], pllm: [192, 256], pout: [12, 368], pgen: [192, 368],
+      ddict: [12, 498], dedit: [192, 498], dout: [12, 610], dqc: [192, 610],
+      pair: [12, 744], tryon: [192, 744], refine: [12, 856], judge: [192, 856],
+      filt: [12, 980], cand: [192, 980], final: [12, 1092, 336, 100]
+    },
+    edges: {
+      g1: "M168,56 H192", g2: "M270,98 V126", g3: "M192,168 H168", g4: "M12,168 H9 Q4,168 4,173 V779 Q4,786 9,786 H12",
+      p1: "M168,298 H192", p2: "M270,340 V368", p3: "M192,410 H168", p4: "M12,410 H9 Q4,410 4,415 V779 Q4,786 9,786 H12",
+      pd: "M90,452 V467 Q90,475 98,475 H262 Q270,475 270,483 V498",
+      d1: "M168,540 H192", d2: "M270,582 V610", d3: "M192,652 H168", d4: "M12,652 H9 Q4,652 4,657 V779 Q4,786 9,786 H12",
+      dx: "M270,694 V714", m1: "M168,786 H192", m2: "M270,828 V856",
+      r1: "M192,898 H168", r2: "M90,856 V843 Q90,836 97,836 H223 Q230,836 230,829 V828",
+      m3: "M270,940 V980", m4: "M192,1022 H168", m5: "M90,1064 V1092"
+    },
+    labels: { m3: ["accept", 278, 964, "start"] },
+    discard: [270, 730]
+  };
+  nodes.forEach(n => { n.wide = { x: n.x, y: n.y, w: n.w, h: n.h }; });
+  edges.forEach(e => { e.wide = { d: e.d, label: e.label }; });
+  let tall = false;
+  function applyLayout() {
+    tall = window.matchMedia("(max-width: 720px)").matches;
+    nodes.forEach(n => {
+      if (tall) { const t = TALL.nodes[n.id]; n.x = t[0]; n.y = t[1]; n.w = t[2] || 156; n.h = t[3] || n.wide.h; }
+      else Object.assign(n, n.wide);
+    });
+    edges.forEach(e => { e.d = tall ? TALL.edges[e.id] : e.wide.d; e.label = tall ? TALL.labels[e.id] : e.wide.label; });
+  }
+
   const stages = [
     { n: 1, t: "Garments", c: C.g, nodes: ["gdict", "gllm", "ggen", "gout"], edges: ["g1", "g2", "g3", "g4"],
-      h: "Garment stream", p: "An LLM expands each of the 200 garment types (common, long-tail and traditional) into prompt variants that vary colour, material, pattern, cut and style. FLUX.2 [klein] 9B renders about 43,000 in-shop garment images." },
+      h: "Garment stream", q: "LLM prompt variants for 200 garment types → ≈43K in-shop garments from FLUX.2 [klein] 9B.", p: "An LLM expands each of the 200 garment types (common, long-tail and traditional) into prompt variants that vary colour, material, pattern, cut and style. FLUX.2 [klein] 9B renders about 43,000 in-shop garment images." },
     { n: 2, t: "People", c: C.p, nodes: ["pdict", "pllm", "pgen", "pout"], edges: ["p1", "p2", "p3", "p4", "pd"],
-      h: "Person stream", p: "Each person is drawn from a factorized attribute distribution: body shape, geographic and cultural style cues, accessories, visible disabilities and assistive devices such as wheelchairs, background and photographic style (50% studio, 50% in-the-wild). 41,000 source persons at 1024 × 1024." },
+      h: "Person stream", q: "Factorized attributes (body, culture, assistive devices, background, style) → 41K source persons.", p: "Each person is drawn from a factorized attribute distribution: body shape, geographic and cultural style cues, accessories, visible disabilities and assistive devices such as wheelchairs, background and photographic style (50% studio, 50% in-the-wild). 41,000 source persons at 1024 × 1024." },
     { n: 3, t: "Difficulty edits", c: C.d, nodes: ["ddict", "dedit", "dqc", "dout"], edges: ["d1", "d2", "d3", "d4", "dx", "pd"],
-      h: "Difficulty stream", p: "Tier dictionaries supply edit keywords that raise pose deviation, occlusion, clutter and viewpoint change. Each person gets several edited variants and a VLM discards failed edits: 300,000 edited persons, 100,000 per tier." },
+      h: "Difficulty stream", q: "Tier edits raise pose, occlusion, clutter and viewpoint; a VLM discards failures → 300K edited persons.", p: "Tier dictionaries supply edit keywords that raise pose deviation, occlusion, clutter and viewpoint change. Each person gets several edited variants and a VLM discards failed edits: 300,000 edited persons, 100,000 per tier." },
     { n: 4, t: "Try-on + VLM loop", c: C.m, nodes: ["pair", "tryon", "judge", "refine"], edges: ["g4", "p4", "d4", "m1", "m2", "r1", "r2"],
-      h: "Merging stream with closed-loop validation", p: "A pairing policy matches the 341K persons with garments while balancing garment categories and tiers. FLUX.2 [klein] 9B synthesizes the try-on and Qwen3-VL 32B checks garment faithfulness, artifacts, placement and semantic consistency. A rejection becomes a refined prompt and the image is regenerated, up to T = 4 times." },
+      h: "Merging stream with closed-loop validation", q: "Pairing → FLUX.2 try-on → Qwen3-VL check. Rejects get a refined prompt, up to 4 rounds.", p: "A pairing policy matches the 341K persons with garments while balancing garment categories and tiers. FLUX.2 [klein] 9B synthesizes the try-on and Qwen3-VL 32B checks garment faithfulness, artifacts, placement and semantic consistency. A rejection becomes a refined prompt and the image is regenerated, up to T = 4 times." },
     { n: 5, t: "Quality screening", c: C.f, nodes: ["cand", "filt", "final"], edges: ["m3", "m4", "m5"],
-      h: "Two-stage quality screening", p: "5,000 triplets are hand-labelled with a 10-question artifact rubric and used to train a ViT-Small filter on the channel-concatenated triplet. Keeping candidates that score ≥ 0.85 leaves 205,000 training and 4,500 test triplets; the test split is also checked by hand." }
+      h: "Two-stage quality screening", q: "A ViT-S filter trained on 5K hand labels keeps scores ≥ 0.85 → 205K train + 4.5K test.", p: "5,000 triplets are hand-labelled with a 10-question artifact rubric and used to train a ViT-Small filter on the channel-concatenated triplet. Keeping candidates that score ≥ 0.85 leaves 205,000 training and 4,500 test triplets; the test split is also checked by hand." }
   ];
 
   const icons = {
@@ -71,7 +105,7 @@ window.Pipeline = (function () {
 
   let svg, gEdges, gParticles, gNodes, nodeEls = {}, edgeEls = {}, edgeLen = {}, edgeLut = {};
   let particles = [], running = false, visible = false, raf = 0, last = 0, spawnAcc = 0;
-  let current = 0, stageTimer = 0, manual = false, reduce = false, counted = false, userScrolled = false;
+  let current = 0, stageTimer = 0, manual = false, reduce = false, counted = false, userScrolled = false, stageIO = null;
   const STAGE_MS = 5600;
 
   function el(tag, attrs, parent) {
@@ -88,7 +122,12 @@ window.Pipeline = (function () {
   function build() {
     svg = document.getElementById("pipeSvg");
     if (!svg) return false;
-    svg.setAttribute("viewBox", "0 0 1280 412");
+    applyLayout();
+    svg.innerHTML = ""; nodeEls = {}; edgeEls = {}; edgeLen = {}; edgeLut = {}; particles = [];
+    svg.setAttribute("viewBox", tall ? TALL.vb : "0 0 1280 412");
+    svg.classList.toggle("tall", tall);
+    const pw = document.getElementById("pipe"); if (pw) pw.classList.toggle("tall-mode", tall);
+    if (stageIO) { stageIO.disconnect(); stageIO = null; }
     const defs = el("defs", {}, svg);
     const glow = el("filter", { id: "pglow", x: "-200%", y: "-200%", width: "500%", height: "500%" }, defs);
     el("feGaussianBlur", { stdDeviation: "3.2" }, glow);
@@ -103,16 +142,17 @@ window.Pipeline = (function () {
       const p = el("path", { d: e.d, class: "edge", "marker-end": "url(#parrow)" }, gEdges);
       edgeEls[e.id] = p;
       const L = p.getTotalLength(); edgeLen[e.id] = L;
-      const n = Math.max(2, Math.ceil(L / 2)), lut = new Float32Array((n + 1) * 2);
+      const n = Math.max(2, Math.ceil(L / 4)), lut = new Float32Array((n + 1) * 2);
       for (let i = 0; i <= n; i++) { const pt = p.getPointAtLength(L * i / n); lut[2 * i] = pt.x; lut[2 * i + 1] = pt.y; }
       edgeLut[e.id] = lut;
+      e.labelEl = null;
       if (e.label) {
         const t = el("text", { x: e.label[1], y: e.label[2], class: "edge-label", "text-anchor": e.label[3] }, gEdges);
         t.textContent = e.label[0];
         e.labelEl = t;
       }
     });
-    const dxl = el("text", { x: 433, y: 406, class: "edge-label", "text-anchor": "middle" }, gEdges);
+    const dxl = el("text", { x: tall ? TALL.discard[0] : 433, y: tall ? TALL.discard[1] : 406, class: "edge-label", "text-anchor": "middle" }, gEdges);
     dxl.textContent = "✕ discarded";
 
     nodes.forEach(n => {
@@ -120,7 +160,7 @@ window.Pipeline = (function () {
       el("rect", { class: "box", width: n.w, height: n.h, rx: 12 }, g);
       el("rect", { class: "accentbar", x: 12, y: 0, width: n.w - 24, height: 3, rx: 1.5, fill: C[n.s] }, g);
       const ic = el("path", { d: icons[n.icon], transform: "translate(12,11) scale(.78)", fill: "none", stroke: C[n.s], "stroke-width": "1.8", "stroke-linecap": "round", "stroke-linejoin": "round" }, g);
-      const cap = el("text", { x: 30, y: 22, style: "font-size:9.5px;font-weight:700;letter-spacing:.09em;fill:var(--muted)" }, g);
+      const cap = el("text", { x: 30, y: 22, style: "font-size:10.5px;font-weight:700;letter-spacing:.08em;fill:var(--muted)" }, g);
       cap.textContent = n.cap.toUpperCase();
       let y = 42;
       if (n.num) {
@@ -136,6 +176,11 @@ window.Pipeline = (function () {
       n.pulse = pulse; n.ic = ic;
       nodeEls[n.id] = g;
     });
+    if (tall && "IntersectionObserver" in window) {
+      // on phones the stage caption follows the stream the reader is looking at
+      stageIO = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { const i = +e.target.dataset.stage; if (i !== current) setStage(i); } }), { rootMargin: "-38% 0px -52% 0px" });
+      stages.forEach((st, i) => { const g = nodeEls[st.nodes[0]]; g.dataset.stage = i; stageIO.observe(g); });
+    }
     return true;
   }
 
@@ -239,7 +284,7 @@ window.Pipeline = (function () {
       }
     }
     clearTimeout(stageTimer);
-    if (!manual && visible && !reduce) stageTimer = setTimeout(() => setStage((current + 1) % stages.length), STAGE_MS);
+    if (!manual && visible && !reduce && !tall) stageTimer = setTimeout(() => setStage((current + 1) % stages.length), STAGE_MS);
   }
 
   function countUp() {
@@ -248,7 +293,7 @@ window.Pipeline = (function () {
       const txt = n.num, m = txt.match(/([\d.]+)/); if (!m) return;
       const to = parseFloat(m[1]), dec = (m[1].split(".")[1] || "").length;
       if (reduce) return;
-      const t0 = performance.now(), dur = 1400;
+      const t0 = performance.now(), dur = 900;
       (function tick(now) {
         const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
         n.numEl.textContent = txt.replace(m[1], (to * e).toFixed(dec));
@@ -257,9 +302,11 @@ window.Pipeline = (function () {
     });
   }
 
+  let built = false;
+  function ensure() { if (built) return; built = build(); if (built) setStage(current); }
   function init() {
     reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!build()) return;
+    if (!document.getElementById("pipeSvg")) return;
     const wrap = document.getElementById("pipe");
     const stepsEl = document.getElementById("steps");
     stepsEl.style.setProperty("--dur", STAGE_MS + "ms");
@@ -268,23 +315,28 @@ window.Pipeline = (function () {
       b.className = "step"; b.type = "button"; b.setAttribute("role", "tab");
       b.style.setProperty("--sc", st.c);
       b.innerHTML = `<div class="n">Stage ${st.n}</div><div class="t">${st.t}</div>`;
-      b.addEventListener("click", () => { manual = true; wrap.classList.add("manual"); setStage(i, true); });
+      b.addEventListener("click", () => { ensure(); manual = true; wrap.classList.add("manual"); setStage(i, true); });
       stepsEl.appendChild(b);
     });
     const det = document.getElementById("stepDetail");
-    det.innerHTML = `<div class="badge">1</div><div class="stack">${stages.map(st => `<div><h3>${st.h}</h3><p>${st.p}</p></div>`).join("")}</div>`;
+    det.innerHTML = `<div class="badge">1</div><div class="stack">${stages.map(st => `<div><h3>${st.h}</h3><p class="full">${st.p}</p><p class="short">${st.q}</p></div>`).join("")}</div>`;
     const sc = document.getElementById("pipeScroll");
     ["pointerdown", "wheel", "touchstart"].forEach(ev => sc.addEventListener(ev, () => { userScrolled = true; }, { passive: true }));
-    setStage(0);
+    // build the SVG (and its particle lookup tables) only when the diagram approaches the viewport
+    new IntersectionObserver((es, o) => { if (es.some(e => e.isIntersecting)) { o.disconnect(); ensure(); } }, { rootMargin: "900px 0px" }).observe(wrap);
     const io = new IntersectionObserver(es => {
       es.forEach(en => {
         visible = en.isIntersecting;
-        if (visible) { countUp(); start(); if (!manual) setStage(current); }
+        if (visible) { ensure(); countUp(); start(); if (!manual) setStage(current); }
         else { stop(); clearTimeout(stageTimer); }
       });
     }, { threshold: 0.25 });
     io.observe(wrap);
     document.addEventListener("visibilitychange", () => { if (document.hidden) stop(); else if (visible) start(); });
+    window.matchMedia("(max-width: 720px)").addEventListener("change", () => {
+      if (!built) return;
+      const wasRunning = running; stop(); build(); setStage(current); if (wasRunning) start();
+    });
   }
   return { init };
 })();

@@ -65,7 +65,7 @@ window.Charts = (function () {
   }
   const f2 = d3.format(".2f"), f1 = d3.format(".1f"), f3 = d3.format(".3f");
   const strip0 = t => t.replace(/^0\./, ".");
-  function fmtDiv(id, v) { if (id === "phi" || id === "theta") return strip0(f3(v)); if (v >= 10) return f1(v); if (v < 1) return strip0(f2(v)); return f2(v); }
+  function fmtDiv(id, v) { if (id === "phi" || id === "theta") return strip0(f3(v)); if (v < 1) return strip0(f2(v)); return f2(v + 1e-9); }
   const fv = (m, v) => (m === "FID" ? f2(v) : m === "KID" ? f2(v) : f2(v).replace(/^0/, ""));
   function register(c) { charts.push(c); }
 
@@ -76,7 +76,7 @@ window.Charts = (function () {
     document.getElementById("refineLegend").innerHTML = TIERS.map(t => `<span><i class="line" style="background:${t[2]}"></i>${t[1]}</span>`).join("");
     const getSplit = seg("refineSplit", v => { split = v; render(); });
     function render(fromResize) {
-      const W = el.clientWidth, H = 320, m = { t: 20, r: 78, b: 42, l: 44 };
+      const W = el.clientWidth, H = W > 480 ? 372 : 300, m = { t: 20, r: 78, b: 42, l: 44 };
       const svg = svgFor(el, W, H).attr("aria-label", "Artifact rate by refinement round for each tier");
       const x = d3.scalePoint().domain(D.refine.iters).range([m.l, W - m.r]);
       const y = d3.scaleLinear().domain([0, 66]).range([H - m.b, m.t]);
@@ -92,13 +92,13 @@ window.Charts = (function () {
       const paths = gl.selectAll("path").data(series, d => d.id).join(enter => enter.append("path").attr("fill", "none").attr("stroke-width", 2.2).attr("stroke-linecap", "round").style("stroke", d => d.c));
       if (first && DUR) {
         paths.attr("d", d => line(d.v)).each(function () { const L = this.getTotalLength(); d3.select(this).attr("stroke-dasharray", L).attr("stroke-dashoffset", L); })
-          .transition().delay((d, i) => i * 160).duration(1300).ease(d3.easeCubicInOut).attr("stroke-dashoffset", 0).on("end", function () { d3.select(this).attr("stroke-dasharray", null); });
-      } else paths.transition(t).attr("d", d => line(d.v));
+          .transition().delay((d, i) => i * 160).duration(1300).ease(d3.easeCubicInOut).attr("stroke-dashoffset", 0).on("end interrupt", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null); });
+      } else paths.interrupt().attr("stroke-dasharray", null).attr("stroke-dashoffset", null).transition(t).attr("d", d => line(d.v));
       const pts = series.flatMap(s => s.v.map((v, i) => ({ k: s.id + i, s, i, v })));
       const gp = layer(svg, "pts");
       const c = gp.selectAll("circle").data(pts, d => d.k).join(enter => enter.append("circle").attr("r", 4.5).style("fill", d => d.s.c).style("stroke", "var(--surface)").attr("stroke-width", 2).attr("cx", d => x(D.refine.iters[d.i])).attr("cy", d => y(d.v)).attr("opacity", first && DUR ? 0 : 1));
       if (first && DUR) c.transition().delay(d => 200 + d.i * 230 + TIERS.findIndex(tt => tt[0] === d.s.id) * 160).duration(300).attr("opacity", 1);
-      else c.transition(t).attr("cx", d => x(D.refine.iters[d.i])).attr("cy", d => y(d.v));
+      else c.interrupt().attr("opacity", 1).transition(t).attr("cx", d => x(D.refine.iters[d.i])).attr("cy", d => y(d.v));
       const gl2 = layer(svg, "labels");
       const lo = d3.min(series, s => s.v[4]), hi = d3.max(series, s => s.v[4]);
       const ends = gl2.selectAll("g.end").data([1]).join(e => { const g = e.append("g").attr("class", "end"); g.append("text").attr("class", "a lbl-strong").style("font-size", "13px"); g.append("text").attr("class", "b lbl-muted").attr("dy", 14).style("font-size", "11px"); return g; });
@@ -137,7 +137,7 @@ window.Charts = (function () {
     const rows = []; let lastGen = null;
     D.robust.forEach(r => { if (r.gen !== lastGen) { rows.push({ head: true, gen: r.gen, cost: r.cost }); lastGen = r.gen; } rows.push(r); });
     function render(fromResize) {
-      const W = el.clientWidth, m = { t: 8, r: 28, b: 34, l: 34 };
+      const W = el.clientWidth, m = { t: 8, r: 40, b: 34, l: 34 };
       let yy = m.t; rows.forEach(r => { r.y = yy; yy += r.head ? 24 : 36; });
       const H = yy + m.b;
       const svg = svgFor(el, W, H).attr("aria-label", "Artifact rate before and after refinement for each generator and evaluator");
@@ -150,11 +150,12 @@ window.Charts = (function () {
         const e = enter.append("g").attr("class", "r");
         e.filter(d => d.head).append("text").attr("class", "lbl-strong").style("font-size", "12.5px").attr("x", 0).attr("y", 15).html(d => `${d.gen} <tspan class="lbl-muted" style="font-weight:500">· est. ${d.cost}</tspan>`);
         const b = e.filter(d => !d.head);
-        b.append("text").attr("class", "ev").attr("x", m.l).attr("y", 9).style("font-size", "11.5px").html(d => d.ev + (d.primary ? ` <tspan style="fill:var(--accent-ink);font-weight:700">· CURVTON config</tspan>` : ""));
+        b.append("text").attr("class", "ev").attr("x", m.l).attr("y", 9).style("font-size", "11.5px").html(d => d.ev + (d.optional ? ` <tspan class="lbl-muted" style="font-style:italic">(optional)</tspan>` : "") + (d.primary ? ` <tspan style="fill:var(--accent-ink);font-weight:700">· CURVTON config</tspan>` : ""));
         b.append("line").attr("class", "conn").attr("y1", 23).attr("y2", 23).style("stroke", "var(--neutral)").attr("stroke-width", 2.5).attr("stroke-linecap", "round");
         b.append("circle").attr("class", "c0").attr("cy", 23).attr("r", 5.5).style("fill", "var(--neutral)").style("stroke", "var(--surface)").attr("stroke-width", 2);
         b.append("circle").attr("class", "c4").attr("cy", 23).attr("r", 6.5).style("fill", "var(--accent)").style("stroke", "var(--surface)").attr("stroke-width", 2);
         b.append("text").attr("class", "v4 lbl-strong").attr("y", 27).attr("text-anchor", "end").style("font-size", "11.5px");
+        b.append("text").attr("class", "v0 lbl-muted").attr("y", 27).style("font-size", "11px");
         b.append("rect").attr("class", "hit").attr("y", 0).attr("height", 34);
         return e;
       });
@@ -168,6 +169,7 @@ window.Charts = (function () {
         b.select("circle.c0").attr("cx", d => x(d.it0[tier]));
         b.select("circle.c4").attr("cx", d => x(d.it0[tier]));
         b.select("text.v4").attr("x", d => x(d.it0[tier]) - 11).attr("opacity", 0).text(d => d.it4[tier] + "%");
+        b.select("text.v0").attr("x", d => x(d.it0[tier]) + 10).attr("opacity", 0).text(d => d.it0[tier] + "%").transition().delay((d, j) => 150 + j * 90).duration(500).attr("opacity", 1);
         const tt = (s, i) => s.transition().delay((d, j) => 150 + j * 90).duration(1100).ease(d3.easeCubicInOut);
         tt(b.select("line.conn")).attr("x1", d => x(d.it4[tier]));
         tt(b.select("circle.c4")).attr("cx", d => x(d.it4[tier]));
@@ -177,6 +179,7 @@ window.Charts = (function () {
         b.select("circle.c0").transition(t).attr("cx", d => x(d.it0[tier]));
         b.select("circle.c4").transition(t).attr("cx", d => x(d.it4[tier]));
         b.select("text.v4").text(d => d.it4[tier] + "%").transition(t).attr("x", d => x(d.it4[tier]) - 11).attr("opacity", 1);
+        b.select("text.v0").text(d => d.it0[tier] + "%").transition(t).attr("x", d => x(d.it0[tier]) + 10).attr("opacity", 1);
       }
       table(card, ["Generator", "Evaluator", "Round 0 (E/M/H)", "Round IV (E/M/H)"], D.robust.map(r => [r.gen, r.ev, r.it0.join(" / "), r.it4.join(" / ")]), (i, r) => D.robust[i].primary);
       first = false;
@@ -199,7 +202,7 @@ window.Charts = (function () {
         const y = d3.scaleLinear().domain([0, d3.max(vals) * 1.05]).range([H - 4, top]);
         const bw = (W - 8) / 3 - 4;
         const data = TIERS.map((tt, i) => ({ id: tt[0], c: tt[2], v: vals[i], i }));
-        const fmt = v => (col.id === "phi" || col.id === "theta" ? strip0(f3(v)) : v >= 10 ? f1(v) : v >= 1 ? f2(v) : strip0(f2(v)));
+        const fmt = v => fmtDiv(col.id, v);
         svg.selectAll("path.b").data(data).join(e => e.append("path").attr("class", "b").attr("d", d => vbar(4 + d.i * (bw + 4), H - 4, bw, 0, 3)))
           .style("fill", d => d.c)
           .on("mousemove", (ev, d) => showTip(`<b>${col.label}</b>` + row(d.c, TIERS[d.i][1], fmt(d.v)), ev)).on("mouseleave", hideTip)
@@ -232,13 +235,20 @@ window.Charts = (function () {
     };
     const segEl = document.getElementById("divDim");
     segEl.innerHTML = dims.map((d, i) => `<button aria-pressed="${i === 0}" data-v="${d}">${d}</button>`).join("");
-    let dim = dims[0];
-    seg("divDim", v => { dim = v; render(false, true); });
+    let dim = dims[0], sub = 0;
+    const subEl = document.createElement("div"); subEl.className = "seg div-sub"; subEl.id = "divSub";
+    el.parentNode.insertBefore(subEl, el);
+    subEl.addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; sub = +b.dataset.v; render(false, true); });
+    seg("divDim", v => { dim = v; sub = 0; render(false, true); });
     const order = [0, 1, 2, 3, 7, 4, 5, 6];
     const names = ["VITON-HD", "DressCode", "StreetTryOn", "Dress-ED", "CURVTON-205K", "↳ easy tier", "↳ medium tier", "↳ hard tier"];
     const colors = ["var(--neutral)", "var(--neutral)", "var(--neutral)", "var(--neutral)", "var(--accent)", "var(--t-easy)", "var(--t-med)", "var(--t-hard)"];
     function render(fromResize, rebuild) {
-      const cols = D.divCols.filter(c => c.dim === dim);
+      const allCols = D.divCols.filter(c => c.dim === dim);
+      const narrowDiv = el.clientWidth <= 700;
+      const cols = narrowDiv ? [allCols[Math.min(sub, allCols.length - 1)]] : allCols;
+      subEl.innerHTML = allCols.length > 1 ? allCols.map((c, i) => `<button aria-pressed="${i === Math.min(sub, allCols.length - 1)}" data-v="${i}">${c.label}</button>`).join("") : "";
+      subEl.style.display = narrowDiv ? "flex" : "none"; subEl.style.visibility = allCols.length > 1 ? "visible" : "hidden";
       let gridEl = el.querySelector(".div-grid");
       if (!gridEl) { gridEl = document.createElement("div"); gridEl.className = "div-grid"; gridEl.style.display = "grid"; gridEl.style.gap = "14px 28px"; el.appendChild(gridEl); }
       if (rebuild || gridEl.childElementCount !== cols.length) {
@@ -316,7 +326,8 @@ window.Charts = (function () {
       layer(svg, "grid").attr("transform", `translate(${m.l},0)`).transition(t).call(d3.axisLeft(y).ticks(5).tickSize(-(W - m.l - m.r)).tickFormat("")).attr("class", "grid");
       layer(svg, "axis y").attr("transform", `translate(${m.l},0)`).transition(t).call(d3.axisLeft(y).ticks(5).tickSize(0).tickPadding(8).tickFormat(metric === "FID" ? d3.format("d") : d3.format(".1f"))).call(g => g.select(".domain").remove());
       const xl = layer(svg, "xl");
-      xl.selectAll("text").data(narrow ? D.subsetsShort : D.subsets.map((s, i) => [0, 1, 2, 3].includes(i) ? s : D.subsetsShort[i])).join("text").attr("class", "lbl-muted").attr("text-anchor", "middle").style("font-size", narrow ? "10.5px" : "11.5px")
+      const shortLbl = W < 420 ? ["All", "E", "M", "H", "UB", "LB", "G", "Tr", "NTr"] : D.subsetsShort;
+      xl.selectAll("text").data(narrow ? shortLbl : D.subsets.map((s, i) => [0, 1, 2, 3].includes(i) ? s : D.subsetsShort[i])).join("text").attr("class", "lbl-muted").attr("text-anchor", "middle").style("font-size", narrow ? "10.5px" : "11.5px")
         .attr("x", (d, i) => gx(i) + gw / 2).attr("y", H - m.b + 18).text(d => d);
       const hd = layer(svg, "heads");
       const heads = [{ t: "Difficulty tier", a: 1, b: 3 }, { t: "Garment type", a: 4, b: 8 }];
@@ -339,8 +350,8 @@ window.Charts = (function () {
       bars.transition().delay(d => first && DUR ? d.i * 55 + d.j * 120 : 0).duration(fromResize ? 0 : DUR).ease(ease)
         .attr("d", d => vbar(bx(d), y(d.v), bw, H - m.b - y(d.v), 4));
       const lb = layer(svg, "vals");
-      const labels = narrow ? [] : data.filter(d => d.k === (b.tr ? "tr" : "zs"));
-      lb.selectAll("text").data(labels, d => d.i).join(enter => enter.append("text").attr("class", "lbl-strong").attr("text-anchor", "middle").style("font-size", "10.5px").attr("x", d => bx(d) + bw / 2).attr("y", d => y(d.v) - 5).attr("opacity", 0))
+      const labels = data.filter(d => d.k === (b.tr ? "tr" : "zs"));
+      lb.selectAll("text").data(labels, d => d.i).join(enter => enter.append("text").attr("class", "lbl-strong").attr("text-anchor", "middle").style("font-size", narrow ? "9px" : "10.5px").attr("x", d => bx(d) + bw / 2).attr("y", d => y(d.v) - 5).attr("opacity", 0))
         .text(d => metric === "FID" ? f1(d.v) : f2(d.v).replace(/^0/, ""))
         .transition().delay(d => first && DUR ? 700 + d.i * 55 : 0).duration(fromResize ? 0 : first ? 400 : DUR).ease(ease)
         .attr("x", d => bx(d) + bw / 2).attr("y", d => y(d.v) - 5).attr("opacity", 1);
@@ -373,7 +384,7 @@ window.Charts = (function () {
       layer(svg, "grid").attr("transform", `translate(0,${H - m.b})`).call(d3.axisBottom(x).tickValues([0, 10, 20, 30]).tickSize(-(H - m.b - m.t)).tickFormat("")).attr("class", "grid");
       layer(svg, "axis x").attr("transform", `translate(0,${H - m.b})`).call(d3.axisBottom(x).tickValues([0, 10, 20, 30]).tickSize(0).tickPadding(9)).call(g => g.select(".domain").attr("stroke", "var(--axis)"));
       let xt = svg.select("text.xt"); if (xt.empty()) xt = svg.append("text").attr("class", "xt lbl-muted").attr("text-anchor", "end").style("font-size", "11px");
-      xt.attr("x", W - m.r).attr("y", H - 3).text("FID ↓");
+      xt.text("");
       const g = layer(svg, "rows").selectAll("g.r").data(data).join(e => {
         const r = e.append("g").attr("class", "r");
         r.append("text").attr("class", "lbl-strong").attr("x", m.l).attr("y", 13).style("font-size", "12.5px").text(d => d.m);
@@ -385,7 +396,9 @@ window.Charts = (function () {
         return r;
       }).attr("transform", (d, i) => `translate(0,${m.t + i * rh})`);
       const known = data.some(d => d.m === sel);
-      g.transition().duration(fromResize ? 0 : 350).attr("opacity", d => !known ? 0.45 : d.m === sel ? 1 : 0.32);
+      const op = d => !known ? 0.5 : d.m === sel ? 1 : 0.28;
+      g.selectAll("rect.zs, rect.tr").transition().duration(fromResize ? 0 : 350).attr("opacity", function () { return op(d3.select(this.parentNode).datum()); });
+      g.select("text.lbl-strong").attr("class", d => d.m === sel ? "lbl-strong" : "lbl-strong lbl-dim");
       const nt = document.getElementById("spreadNote");
       if (nt) nt.textContent = known ? `FID only · ${sel} highlighted` : `FID only · ${sel} has no CURVTON-trained run`;
       g.select("rect.hit").attr("x", 0).attr("width", W).on("mousemove", (ev, d) => showTip(`<b>${d.m}</b> · FID over 5 garment types` + row("var(--neutral)", "Zero-shot", `${f2(d.zs[0])}–${f2(d.zs[1])}`) + row("var(--accent)", "CURVTON-trained", `${f2(d.tr[0])}–${f2(d.tr[1])}`) + row(null, "Range", `${f2(d.zs[1] - d.zs[0])} → ${f2(d.tr[1] - d.tr[0])}`), ev)).on("mouseleave", hideTip);
@@ -408,10 +421,10 @@ window.Charts = (function () {
   function wild() {
     const card = document.getElementById("wildCard"), el = document.getElementById("wildChart");
     const metrics = [
-      { k: "q", name: "Human pref.: quality", max: 40, pct: true },
-      { k: "r", name: "Human pref.: realism", max: 40, pct: true },
-      { k: "clip", name: "CLIP-I ↑", max: 1, pct: false },
-      { k: "vlm", name: "VLM score ↑", max: 1, pct: false }
+      { k: "q", name: "Quality", grp: "Human preference (%)", max: 40, pct: true },
+      { k: "r", name: "Realism", grp: "Human preference (%)", max: 40, pct: true },
+      { k: "clip", name: "CLIP-I ↑", grp: "Automatic metrics", max: 1, pct: false },
+      { k: "vlm", name: "VLM score ↑", grp: "Automatic metrics", max: 1, pct: false }
     ];
     let first = true;
     function render(fromResize) {
@@ -419,14 +432,17 @@ window.Charts = (function () {
       let host = el.querySelector(".wild-host"); if (!host) { host = document.createElement("div"); host.className = "wild-host"; el.appendChild(host); }
       if (host.childElementCount !== groups.length) { host.innerHTML = ""; groups.forEach(() => host.appendChild(document.createElement("div"))); }
       host.querySelectorAll(":scope > div").forEach((div, gi) => {
-        const ms = groups[gi], rh = 34, m = { t: 30, r: 6, b: 10, l: W < 520 ? 104 : 136 };
+        const ms = groups[gi], rh = 34, m = { t: 48, r: 6, b: 10, l: W < 520 ? 104 : 136 };
         const H = m.t + D.wild.length * rh + m.b;
         const svg = svgFor(div, W, H).attr("aria-label", ms.map(x => x.name).join(", "));
         const pw = (W - m.l - m.r) / ms.length, gap = 18;
         svg.selectAll("text.nm").data(D.wild).join("text").attr("class", d => "nm " + (d.ours ? "lbl-strong" : "")).attr("x", 0).attr("y", (d, i) => m.t + i * rh + rh / 2 + 4).style("font-size", "12px").text(d => d.name);
         const panels = svg.selectAll("g.p").data(ms, d => d.k).join(e => { const g = e.append("g").attr("class", "p"); g.append("text").attr("class", "pt lbl-strong").attr("y", 14).style("font-size", "12px"); g.append("line").attr("class", "base").style("stroke", "var(--axis)"); return g; })
           .attr("transform", (d, i) => `translate(${m.l + i * pw},0)`);
-        panels.select("text.pt").attr("x", 0).text(d => d.name);
+        panels.select("text.pt").attr("x", 0).attr("y", 36).style("font-weight", 600).attr("class", "pt lbl-muted").text(d => d.name);
+        const grps = [...new Set(ms.map(d => d.grp))].map(gname => { const idx = ms.map((d, i) => d.grp === gname ? i : -1).filter(i => i >= 0); return { gname, a: idx[0], b: idx[idx.length - 1] }; });
+        svg.selectAll("g.grp").data(grps, d => d.gname).join(e => { const g = e.append("g").attr("class", "grp"); g.append("text").attr("class", "lbl-strong").attr("y", 14).style("font-size", "12.5px"); g.append("line").style("stroke", "var(--line-2)"); return g; })
+          .each(function (d) { const g = d3.select(this), x0 = m.l + d.a * pw, x1 = m.l + (d.b + 1) * pw - gap; g.select("text").attr("x", x0).text(d.gname); g.select("line").attr("x1", x0).attr("x2", x1).attr("y1", 21).attr("y2", 21); });
         panels.select("line.base").attr("x1", 0).attr("x2", 0).attr("y1", m.t).attr("y2", H - m.b);
         panels.each(function (mt, pi) {
           const x = d3.scaleLinear().domain([0, mt.max]).range([0, pw - gap - 34]);
@@ -489,7 +505,8 @@ window.Charts = (function () {
       const x = d3.scaleLinear().domain([lo - pad, hi + pad]).range([m.l, W - m.r]).nice();
       const t = svg.transition().duration(fromResize || first ? 0 : DUR).ease(ease);
       layer(svg, "grid").attr("transform", `translate(0,${H - m.b})`).transition(t).call(d3.axisBottom(x).ticks(W < 560 ? 4 : 7).tickSize(-(H - m.b - m.t)).tickFormat("")).attr("class", "grid");
-      layer(svg, "axis x").attr("transform", `translate(0,${H - m.b})`).transition(t).call(d3.axisBottom(x).ticks(W < 560 ? 4 : 7).tickSize(0).tickPadding(9).tickFormat(metric === "SSIM" || metric === "LPIPS" ? d3.format(".2f") : d3.format(".1f"))).call(g => g.select(".domain").attr("stroke", "var(--axis)"));
+      const tv = W < 560 ? [...new Set([x.domain()[0], ...x.ticks(3), x.domain()[1]])] : x.ticks(7);
+      layer(svg, "axis x").attr("transform", `translate(0,${H - m.b})`).transition(t).call(d3.axisBottom(x).tickValues(tv).tickSize(0).tickPadding(9).tickFormat(metric === "SSIM" || metric === "LPIPS" ? d3.format(".2f") : d3.format(".1f"))).call(g => g.select(".domain").attr("stroke", "var(--axis)"));
       let xt = svg.select("text.xt"); if (xt.empty()) xt = svg.append("text").attr("class", "xt lbl-muted").attr("text-anchor", "end").style("font-size", "11px");
       xt.attr("x", W - m.r).attr("y", H - 4).text(metric === "SSIM" ? "SSIM, higher is better →" : `← lower is better, ${metric}`);
       const rows = D.cross.models.map((mn, i) => ({ mn, i, v: dd[mn] }));
@@ -505,11 +522,14 @@ window.Charts = (function () {
       const off = (d, k) => { const v = d.v; const same = [0, 1, 2].filter(j => j !== k && v[j] === v[k]); if (!same.length) return 0; return (k - 1) * 6; };
       [0, 1, 2].forEach(k => {
         const c = g.select("circle.d" + k);
-        if (first && DUR) c.attr("cx", m.l).attr("opacity", 0).transition().delay((d) => 150 + d.i * 110 + k * 90).duration(900).ease(ease).attr("cx", d => x(d.v[k])).attr("cy", d => off(d, k)).attr("opacity", 1);
-        else c.transition(t).attr("cx", d => x(d.v[k])).attr("cy", d => off(d, k)).attr("opacity", 1);
+        if (first && DUR) {
+          if (k === 0) c.attr("cx", d => x(d.v[0])).attr("cy", d => off(d, 0)).attr("opacity", 0).transition().delay(d => 100 + d.i * 90).duration(350).attr("opacity", 1);
+          else if (k === 2) c.attr("cx", d => x(d.v[0])).attr("cy", d => off(d, 2)).attr("opacity", 0).transition().delay(d => 500 + d.i * 110).duration(120).attr("opacity", 1).transition().duration(900).ease(d3.easeCubicInOut).attr("cx", d => x(d.v[2]));
+          else c.attr("cx", d => x(d.v[1])).attr("cy", d => off(d, 1)).attr("opacity", 0).transition().delay(d => 1500 + d.i * 90).duration(400).attr("opacity", 1);
+        } else c.transition(t).attr("cx", d => x(d.v[k])).attr("cy", d => off(d, k)).attr("opacity", 1);
       });
       const sp = g.select("line.span");
-      (first && DUR ? sp.attr("x1", m.l).attr("x2", m.l).transition().delay(d => 150 + d.i * 110).duration(900) : sp.transition(t))
+      (first && DUR ? sp.attr("x1", d => x(d.v[0])).attr("x2", d => x(d.v[0])).transition().delay(d => 620 + d.i * 110).duration(900).ease(d3.easeCubicInOut) : sp.transition(t))
         .attr("x1", d => x(d3.min(d.v))).attr("x2", d => x(d3.max(d.v))).attr("y1", 0).attr("y2", 0);
       g.select("text.delta").text(d => { const dl = d.v[2] - d.v[0]; return `${W < 520 ? "Δ" : "Real+CURVTON Δ"} ${dl > 0 ? "+" : dl < 0 ? "−" : "±"}${f2(Math.abs(dl))}`; });
       g.select("rect.hit").attr("x", 0).attr("width", W).on("mousemove", (ev, d) => showTip(`<b>${d.mn} · ${benchN}</b>` + D.cross.settings.map((s, k) => row(cols[k], s.name, fv(metric, d.v[k]))).join(""), ev)).on("mouseleave", hideTip);
@@ -550,13 +570,13 @@ window.Charts = (function () {
       const series = [{ id: "nc", name: "No curriculum", c: "var(--real)", v: nc }, { id: "sc", name: "Curriculum", c: "var(--mix)", v: sc }];
       const gl = layer(svg, "lines");
       const p = gl.selectAll("path").data(series, d => d.id).join(e => e.append("path").attr("fill", "none").attr("stroke-width", 2.2).attr("stroke-linecap", "round").style("stroke", d => d.c));
-      if (first && DUR) p.attr("d", d => line(d.v)).each(function () { const L = this.getTotalLength(); d3.select(this).attr("stroke-dasharray", L).attr("stroke-dashoffset", L); }).transition().delay((d, i) => i * 200).duration(1200).ease(d3.easeCubicInOut).attr("stroke-dashoffset", 0).on("end", function () { d3.select(this).attr("stroke-dasharray", null); });
-      else p.transition(t).attr("d", d => line(d.v));
+      if (first && DUR) p.attr("d", d => line(d.v)).each(function () { const L = this.getTotalLength(); d3.select(this).attr("stroke-dasharray", L).attr("stroke-dashoffset", L); }).transition().delay((d, i) => i * 200).duration(1200).ease(d3.easeCubicInOut).attr("stroke-dashoffset", 0).on("end interrupt", function () { d3.select(this).attr("stroke-dasharray", null).attr("stroke-dashoffset", null); });
+      else p.interrupt().attr("stroke-dasharray", null).attr("stroke-dashoffset", null).transition(t).attr("d", d => line(d.v));
       const pts = series.flatMap(s => s.v.map((v, i) => ({ k: s.id + i, s, i, v })));
       const gp = layer(svg, "pts");
       const c = gp.selectAll("circle").data(pts, d => d.k).join(e => e.append("circle").attr("r", 4.5).style("fill", d => d.s.c).style("stroke", "var(--surface)").attr("stroke-width", 2).attr("cx", d => x(lbls[d.i])).attr("cy", d => y(d.v)).attr("opacity", first && DUR ? 0 : 1));
       if (first && DUR) c.transition().delay(d => 200 + d.i * 280 + (d.s.id === "sc" ? 200 : 0)).duration(300).attr("opacity", 1);
-      else c.transition(t).attr("cx", d => x(lbls[d.i])).attr("cy", d => y(d.v));
+      else c.interrupt().attr("opacity", 1).transition(t).attr("cx", d => x(lbls[d.i])).attr("cy", d => y(d.v));
       // end labels with collision avoidance
       let ya = y(nc[3]), yb = y(sc[3]);
       if (Math.abs(ya - yb) < 30) { const mid = (ya + yb) / 2; if (ya <= yb) { ya = mid - 15; yb = mid + 15; } else { ya = mid + 15; yb = mid - 15; } }

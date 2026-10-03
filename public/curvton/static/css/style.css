@@ -12,9 +12,9 @@
   --ink:#141217; --ink-2:#4d4954; --muted:#6b6672; --line:#e7e1d8; --line-2:#d9d2c7;
   --grid:#ece7df; --axis:#c9c2b6;
   --accent:#eb6834; --accent-ink:#b8441a; --accent-soft:#fde9df;
-  --real:#2a78d6; --mix:#1baf7a; --reject:#e34948; --violet:#8a4fc0;
+  --real:#2a78d6; --mix:#109c86; --reject:#e34948; --violet:#8a4fc0;
   --neutral:#958f86; --neutral-2:#d8d2c8;
-  --t-easy:#c08ee0; --t-med:#8a4fc0; --t-hard:#4f2a80;
+  --t-easy:#a776d6; --t-med:#7c45b8; --t-hard:#4a2678;
   --shadow:0 1px 2px rgba(20,18,23,.06),0 8px 24px -12px rgba(20,18,23,.18);
   --shadow-lg:0 2px 4px rgba(20,18,23,.06),0 24px 48px -20px rgba(20,18,23,.28);
   --radius:16px; --radius-sm:10px;
@@ -127,7 +127,7 @@ button{font:inherit;color:inherit}
 .cmp:hover .cmp-knob,.cmp.dragging .cmp-knob{transform:scale(1.08)}
 .cmp-knob svg{width:22px;height:22px}
 .cmp-tag{position:absolute;top:14px;z-index:4;font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:6px 11px;border-radius:999px;color:#fff;background:rgba(15,14,18,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:opacity .3s}
-.cmp-tag.l{left:14px}.cmp-tag.r{right:14px;background:color-mix(in srgb,var(--accent) 88%,#000)}
+.cmp-tag.l{left:14px}.cmp-tag.r{right:14px;background:#b8441a}
 .cmp-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:4;font-size:.78rem;color:#fff;background:rgba(15,14,18,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:6px 12px;border-radius:999px;white-space:nowrap;transition:opacity .4s}
 .side{display:flex;flex-direction:column;gap:14px;min-width:0}
 .garment-card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:14px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px;flex:1;min-height:0}
@@ -204,7 +204,7 @@ p{margin:0 0 14px}
 .node rect.box{fill:var(--surface);stroke:var(--line-2);stroke-width:1;transition:stroke .3s,fill .3s}
 .node .accentbar{transition:opacity .3s}
 .node .t1{font-size:13.5px;font-weight:700}
-.node .t2{font-size:11.5px;fill:var(--muted)}
+.node .t2{font-size:12px;fill:var(--muted)}
 .node .num{font-size:19px;font-weight:800;letter-spacing:-.02em}
 .node{transition:opacity .4s var(--ease)}
 .node.dim rect.box{stroke-opacity:.4}
@@ -214,7 +214,7 @@ p{margin:0 0 14px}
 .edge{fill:none;stroke:var(--axis);stroke-width:1.5;transition:opacity .4s,stroke .3s}
 .edge.dim{opacity:.35}
 .edge.hot{stroke-width:2}
-.edge-label{font-size:11px;font-weight:600;fill:var(--muted)}
+.edge-label{font-size:12px;font-weight:600;fill:var(--muted)}
 .pipe-legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:.82rem;color:var(--ink-2);margin:12px 4px 0}
 .pipe-legend span{display:inline-flex;align-items:center;gap:7px}
 .pipe-legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
@@ -228,7 +228,7 @@ p{margin:0 0 14px}
 .step.active::after{animation:fill var(--dur,5s) linear forwards}
 .pipe.paused .step.active::after,.pipe.manual .step.active::after{animation:none;transform:scaleX(1)}
 .step-detail{margin-top:14px;min-height:96px;padding:18px 20px;display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start}
-.step-detail .badge{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-weight:800;color:#fff;background:var(--sc,var(--accent));font-size:1.05rem;transition:background .3s}
+.step-detail .badge{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-weight:800;color:#fff;background:color-mix(in srgb,var(--sc,var(--accent)) 78%,#000);font-size:1.05rem;transition:background .3s}
 .step-detail h3{margin-bottom:4px}
 .step-detail p{margin:0;color:var(--ink-2);font-size:.96rem}
 .fade-swap{animation:fadeup .45s var(--ease)}
@@ -303,7 +303,7 @@ table.data tr.ours td{background:color-mix(in srgb,var(--accent) 10%,transparent
 .trip figcaption b{color:var(--ink);font-family:var(--display);font-size:1.02rem;font-weight:600}
 .trip .cell{position:relative}
 .trip .cell span{position:absolute;left:8px;top:8px;font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:rgba(10,9,12,.55);padding:3px 7px;border-radius:999px;backdrop-filter:blur(4px)}
-.trip .cell:last-child span{background:color-mix(in srgb,var(--accent) 88%,#000)}
+.trip .cell:last-child span{background:#b8441a}
 .trip.enter{animation:popin .55s var(--ease) both}
 @keyframes popin{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
 .tier-desc{padding:20px 22px}
@@ -538,7 +538,7 @@ p,.note{text-wrap:pretty}
   .matrix tr.ours td:first-child{background:color-mix(in srgb,var(--accent) 9%,var(--surface))}
   .mk{width:20px;height:20px}
   .cov .lbl{display:none}
-  pre{padding-top:44px}
+  pre:has(.copy){padding-top:44px}
   #bibtex{white-space:pre-wrap;word-break:break-word}
   .rs .v{font-size:clamp(.9rem,4vw,1.2rem)}
   .gcard .gc-meta .chip{display:none}
@@ -551,3 +551,51 @@ section.band + section{padding-top:64px}
 .fig4 > .paperimg{max-width:900px;width:100%;margin-inline:auto}
 .fig4 .row2 .paperimg{max-height:360px;width:auto;max-width:100%;margin-inline:auto;object-fit:contain}
 .tsne-stage img{height:auto;max-height:560px}
+
+/* ---------- round 4 additions ---------- */
+.pipe-svg.tall{min-width:0}
+.pipe.tall-mode .swipe-hint{display:none}
+.step-detail .stack > div{transition:opacity .16s ease,transform .16s ease,visibility 0s linear .16s}
+.step-detail .stack > div.on{transition:opacity .34s var(--ease) .14s,transform .34s var(--ease) .14s,visibility 0s}
+.div-sub{display:none;margin:6px 0 2px}
+.zoom{flex-direction:column;gap:12px}
+.zoom figcaption{color:#e9e4ee;font-size:.88rem;max-width:min(1100px,100%);text-align:center;line-height:1.5}
+.zoom .zclose{position:absolute;top:16px;right:16px;border:0;background:rgba(255,255,255,.14);color:#fff;width:44px;height:44px;border-radius:50%;cursor:pointer;display:grid;place-items:center}
+.zoom .zclose:hover{background:rgba(255,255,255,.26)}
+.zoom .zclose svg{width:20px;height:20px}
+.tap-only{display:none}
+@media (hover:none){.hover-only{display:none}.tap-only{display:inline}}
+@media (max-width:720px){
+  .seg{flex-wrap:nowrap;overflow-x:auto;max-width:100%;scrollbar-width:none}
+  .seg.ovf:not(.at-end){-webkit-mask-image:linear-gradient(90deg,#000 84%,transparent);mask-image:linear-gradient(90deg,#000 84%,transparent)}
+  .seg.ovf.scrolled:not(.at-end){-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 84%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 84%,transparent)}
+  .seg.ovf.scrolled.at-end{-webkit-mask-image:linear-gradient(90deg,transparent,#000 14%);mask-image:linear-gradient(90deg,transparent,#000 14%)}
+  .seg::-webkit-scrollbar{display:none}
+  .controls{max-width:100%}
+  .gcard .gc-meta .chip{display:inline-flex;font-size:0;gap:0;padding:5px}
+  .gcard .gc-meta .chip i{width:9px;height:9px}
+  #bibtex,#code1{white-space:pre;overflow-x:auto;font-size:.76rem;word-break:normal}
+}
+.chart-card.show-table .div-sub{display:none!important}
+
+/* ---------- final-round additions ---------- */
+@media (min-width:1340px){.pipe > .card{margin-inline:-56px}}
+.chip i,.gcard .gc-meta .chip i,#lbChips .chip i{box-shadow:0 0 0 1.5px rgba(255,255,255,.85)}
+.zoom figcaption{background:rgba(10,8,14,.88);padding:8px 14px;border-radius:10px}
+#data .grid-2{align-items:start}
+.fact span{line-height:1.35;display:block}
+@media (max-width:720px){
+  .matrix td:first-child{white-space:normal;width:46%}
+  .mx-meta{display:block;white-space:normal;line-height:1.35;margin-top:3px}
+  .pipe.tall-mode .steps{display:none}
+  .pipe.tall-mode .step-detail{position:sticky;bottom:10px;z-index:6;padding:12px 14px;gap:12px;min-height:0;box-shadow:var(--shadow-lg)}
+  .pipe.tall-mode .step-detail .badge{width:32px;height:32px;border-radius:9px;font-size:.9rem}
+  .pipe.tall-mode .step-detail h3{font-size:.98rem}
+  .pipe.tall-mode .step-detail p{font-size:.86rem;line-height:1.5}
+  .pipe.tall-mode .step-detail .stack > div:not(.on){position:absolute;inset:0 0 auto 0}
+  .pipe.tall-mode .step-detail .stack{position:relative}
+}
+.chart .lbl-dim{fill:var(--muted);font-weight:600}
+.step-detail .short{display:none}
+.pipe.tall-mode .step-detail .short{display:block}
+.pipe.tall-mode .step-detail .full{display:none}

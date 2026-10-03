@@ -8,8 +8,14 @@
 <meta property="og:title" content="CURVTON-205K: A Mask-Free Difficulty-Stratified Synthetic Dataset for Robust and Scalable Virtual Try-On">
 <meta property="og:description" content="205K curated mask-free try-on triplets · 200 garment types · easy / medium / hard tiers · evaluated across four VTON architectures.">
 <meta property="og:type" content="website">
-<meta property="og:image" content="static/img/og.jpg">
+<meta property="og:url" content="https://dipanbartaula.github.io/curvton/">
+<meta property="og:image" content="https://dipanbartaula.github.io/curvton/static/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="CURVTON-205K: mask-free, difficulty-stratified virtual try-on data">
+<meta name="twitter:image" content="https://dipanbartaula.github.io/curvton/static/img/og.jpg">
+<link rel="canonical" href="https://dipanbartaula.github.io/curvton/">
 <meta name="theme-color" content="#fbf9f6" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0f0e12" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23141217'/%3E%3Cpath d='M22 14l-10 8 5 8 5-3v23h20V27l5 3 5-8-10-8c-2 4-6 6-10 6s-8-2-10-6z' fill='%23eb6834'/%3E%3C/svg%3E">
@@ -163,7 +169,7 @@
     </div>
     <div class="pipe reveal" id="pipe">
       <div class="card" style="padding:14px 14px 10px">
-        <div class="pipe-scroll" id="pipeScroll"><svg class="pipe-svg" id="pipeSvg" viewBox="0 0 1280 560" role="img" aria-label="Animated diagram of the CURVTON-205K generation pipeline"></svg></div>
+        <div class="pipe-scroll" id="pipeScroll"><svg class="pipe-svg" id="pipeSvg" viewBox="0 0 1280 412" role="img" aria-label="Animated diagram of the CURVTON-205K generation pipeline"></svg></div>
         <div class="pipe-legend" aria-hidden="true">
           <span><i style="background:var(--accent)"></i>garment</span>
           <span><i style="background:var(--real)"></i>person</span>
@@ -242,7 +248,7 @@
         <img class="paperimg" src="static/img/paper/luminance.jpg" width="1162" height="694" alt="Mean-luminance distributions per tier" loading="lazy">
         <img class="paperimg" src="static/img/paper/pose_radar.jpg" width="653" height="687" alt="Pose distribution per tier (radar plot)" loading="lazy" style="max-height:380px;object-fit:contain;justify-self:center">
       </div>
-      <figcaption class="note" style="margin-top:2px">Paper Fig. 4, per tier: occlusion heatmaps (top), mean-luminance distributions (bottom left) and pose distributions (bottom right). Harder tiers spread occlusion over more of the body, shift lighting toward darker scenes, and cover far more of the pose space. Click a figure to enlarge.</figcaption>
+      <figcaption class="note" style="margin-top:2px">Paper Fig. 4, per tier: occlusion heatmaps (top), mean-luminance distributions (bottom left) and pose distributions (bottom right). Harder tiers spread occlusion over more of the body, shift lighting toward darker scenes, and cover far more of the pose space. The paper's plots colour easy green, medium orange and hard purple. <span class="hover-only">Click</span><span class="tap-only">Tap</span> a figure to enlarge.</figcaption>
     </figure>
   </div>
 </section>
@@ -279,7 +285,7 @@
 
     <div class="card pad reveal" style="margin-top:20px">
       <h3>Who is in the data</h3>
-      <p style="color:var(--ink-2);font-size:.93rem;margin:0 0 6px;max-width:860px">Person prompts sample body shape, geographic and cultural style cues, accessories, visible disabilities and assistive devices, background and photographic style (50% studio, 50% in-the-wild) from a factorized distribution, so the long tail does not collapse. Hover to pause.</p>
+      <p style="color:var(--ink-2);font-size:.93rem;margin:0 0 6px;max-width:860px">Person prompts sample body shape, geographic and cultural style cues, accessories, visible disabilities and assistive devices, background and photographic style (50% studio, 50% in-the-wild) from a factorized distribution, so the long tail does not collapse.<span class="hover-only"> Hover to pause.</span></p>
       <div class="marquee" aria-label="Sample source persons (paper Fig. 14)"><div class="track" id="marqueeA"></div><div class="track rev" id="marqueeB"></div></div>
     </div>
 
@@ -379,7 +385,7 @@
     <div class="sec-head reveal">
       <div class="kicker">Gallery</div>
       <h2>Browse the sample split</h2>
-      <p class="lead">Hover a card to see the source person; click to open the side-by-side comparison. Garments span 200 types across many cultures.</p>
+      <p class="lead"><span class="hover-only">Hover a card to see the source person; click</span><span class="tap-only">Tap a card</span> to open the side-by-side comparison. Garments span 200 types across many cultures.</p>
     </div>
     <div class="filters reveal">
       <div class="seg" id="galTier"><button aria-pressed="true" data-v="all">All tiers</button><button aria-pressed="false" data-v="easy"><span class="sw t-e"></span>Easy</button><button aria-pressed="false" data-v="medium"><span class="sw t-m"></span>Medium</button><button aria-pressed="false" data-v="hard"><span class="sw t-h"></span>Hard</button></div>
@@ -494,9 +500,12 @@ tryon_image/fh_000007_e03_fc_009678_uyghur_atlas_dress.png</pre>
   </div>
 </div>
 
-<div class="zoom" id="zoom" role="dialog" aria-modal="true" aria-label="Enlarged figure"><img alt=""></div>
+<div class="zoom" id="zoom" role="dialog" aria-modal="true" aria-label="Enlarged figure">
+  <button class="zclose" type="button" aria-label="Close enlarged figure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <img alt=""><figcaption></figcaption>
+</div>
 
-<div class="tooltip" id="tip" role="status" aria-live="polite"></div>
+<div class="tooltip" id="tip" aria-hidden="true"></div>
 
 <script src="static/vendor/d3.v7.min.js"></script>
 <script src="static/js/data.js"></script>
