@@ -43,6 +43,13 @@ h1 .name{white-space:nowrap;background:linear-gradient(100deg,#d9480f 0%,#f76707
 .affils{color:var(--muted);font-size:.92rem;max-width:920px;margin:0 auto;line-height:1.7}
 .affils span{display:inline-block;margin:0 8px}
 .notes{color:var(--muted);font-size:.86rem;margin-top:8px}
+.logos{--k:1;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:14px calc(40px*var(--k));margin:22px auto 0}
+.logos .lg{display:block;line-height:0;opacity:.92;transition:opacity .2s,transform .2s var(--ease)}
+.logos .lg:hover{opacity:1;transform:translateY(-2px)}
+.logos img{display:block;width:auto;max-width:none;height:calc(var(--h)*var(--k))}
+.lg-tu{--h:50px}.lg-fog{--h:32px}.lg-ucd{--h:48px}.lg-abdn{--h:36px}.lg-naamii{--h:26px}
+.lg-br{display:none}
+@media (max-width:760px){.logos{--k:.8;row-gap:7px;margin-top:18px}.lg-br{display:block;flex-basis:100%;height:0}}
 .buttons{margin:24px 0 6px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:999px;background:#1d1d1f;color:#fff;font-family:var(--display);font-weight:650;font-size:.95rem;letter-spacing:-.005em;transition:transform .15s var(--ease),background .15s}
 .btn:hover{transform:translateY(-2px);background:#000;text-decoration:none}
