@@ -85,6 +85,9 @@ export const research: ResearchPaper[] = [
     desc: [
       "Introduces the largest virtual try-on benchmark to date (205K+ samples), establishing a new state-of-the-art in dataset diversity across poses, occlusions, illumination conditions, background density, and garment categories — entirely mask-free. Evaluation transparency is enforced via stratification into difficulty tiers, enabling rigorous benchmarking across the full distribution of generation challenge rather than aggregate metrics alone. Dataset artifacts and trained model checkpoints are published to the Hugging Face Hub, including Croissant/metadata files and repository documentation.",
     ],
+    links: [
+      { label: "Project page", href: "https://dipanbartaula.github.io/curvton/" },
+    ],
     inlineImage: {
       src: "/images/curvton-results.webp", w: 1265, h: 296,
       caption: "Feedback-loop iterations over the source person and garment images",
@@ -106,6 +109,9 @@ export const research: ResearchPaper[] = [
     desc: [
       "Frozen generative models are increasingly reused as differentiable objectives, but their scores mix every change that makes a scene more likely — while an inverse solver controls only one factor. DreamCloth introduces structural counterfactual score factorization: a differentiable renderer builds a matched 2×2 lattice of the same scene (clothed rollout, static clothed frame, garment-free moving body, garment-free static body) and a frozen video prior scores all four under one shared noise draw. Their (+, −, −, +) mixed difference cancels the constant and both one-factor main effects exactly, for any nonlinear black-box score, leaving only the garment–motion interaction.",
       "That interaction is distilled through a differentiable codimensional MPM cloth simulator with body contact to optimise density, stretching stiffness, thickness and contact friction, from multi-view images with no tracked garment supervision. On ActorsHQ and 4D-DRESS, factored guidance beats direct score distillation on held-out geometry (Chamfer 0.606 → 0.468 and 0.507 → 0.375), and removing the fourth corner worsens it (0.362 → 0.422). The paper is explicit about what this identifies: held-out rollout fidelity supports behavioral identification, while sign agreement, boundary saturation and a 25-initialization landscape study show where unique material constants are not supported.",
+    ],
+    links: [
+      { label: "Project page", href: "https://dreamcloth-iclr.netlify.app/" },
     ],
     inlineImage: null,
     images: [
